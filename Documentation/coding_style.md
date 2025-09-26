@@ -1,0 +1,6 @@
+- Use camelCase or lowerCamelCase for functions and variables.
+- Use UpperCamelCase for types/classes.
+- Constants are all uppercase with underscores for spaces.
+- Prefix private member variables with m_.
+- Place the asterisk for pointer types next to the variable name, not the type.
+- Always use braces for conditionals and loops to improve readability.
