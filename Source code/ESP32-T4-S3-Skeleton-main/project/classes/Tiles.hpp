@@ -9,7 +9,8 @@ class Tiles
 
     private:
         static void on_tile_clicked(lv_event_t* e);
-        void apply_tile_colors(lv_obj_t* tile, lv_obj_t* label, bool dark);
+        void apply_bg_color(lv_obj_t* tile, bool dark);
+        void apply_text_color(lv_obj_t* label, bool dark);
     
         lv_obj_t* tileview_ = nullptr;
 
