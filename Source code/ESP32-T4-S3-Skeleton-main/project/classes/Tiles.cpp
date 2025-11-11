@@ -9,20 +9,16 @@ void Tiles::create_ui()
     lv_obj_set_scrollbar_mode(tileview_, LV_SCROLLBAR_MODE_OFF);
 
     // Add tiles
-    t1_ = lv_tileview_add_tile(tileview_, 0, 0, LV_DIR_NONE);
-
-
     t2_ = lv_tileview_add_tile(tileview_, 0, 0, LV_DIR_ALL);
+    
+    t3_ = lv_tileview_add_tile(tileview_, 0, -1, LV_DIR_ALL);
+    
+    t4_ = lv_tileview_add_tile(tileview_, -1, 0, LV_DIR_ALL);
+    
+    t5_ = lv_tileview_add_tile(tileview_, 1, 0, LV_DIR_ALL);
+    
     lv_obj_add_flag(t2_, LV_OBJ_FLAG_HIDDEN);
-
-    t3_left = lv_tileview_add_tile(tileview_, -1, -1, LV_DIR_ALL);
-    t3_mid = lv_tileview_add_tile(tileview_, 0, -1, LV_DIR_ALL);
-    t3_right = lv_tileview_add_tile(tileview_, 1, -1, LV_DIR_ALL);
-
-    t4_ = lv_tileview_add_tile(tileview_, 1, 0, LV_DIR_ALL);
-
-    t5_ = lv_tileview_add_tile(tileview_, -1, 0, LV_DIR_ALL);
-
+    t1_ = lv_tileview_add_tile(tileview_, 0, 0, LV_DIR_NONE);
         // Tile #1
     {
         t1_label_ = lv_label_create(t1_);
@@ -30,7 +26,7 @@ void Tiles::create_ui()
         lv_obj_set_style_text_font(t1_label_, &lv_font_montserrat_48, 0);
         lv_obj_center(t1_label_);
 
-        //apply_tile_colors(t1_, t1_label_, /*dark=*/false);
+
         lv_obj_add_flag(t1_, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_add_event_cb(t1_, &Tiles::on_tile_clicked, LV_EVENT_CLICKED, this);
 
@@ -69,55 +65,25 @@ void Tiles::create_ui()
 
     }
 
-        // Tile #3 left
+        // Tile #3
     {
-        t3_left_label_ = lv_label_create(t3_left);
-        lv_label_set_text(t3_left_label_, "Location Selectino");
-        lv_obj_set_style_text_font(t3_left_label_, &lv_font_montserrat_48, 0);
-        lv_obj_center(t3_left_label_);
+        t3_label_ = lv_label_create(t3_);
+        lv_label_set_text(t3_label_, "Location Selectino");
+        lv_obj_set_style_text_font(t3_label_, &lv_font_montserrat_48, 0);
+        lv_obj_center(t3_label_);
 
         //apply_tile_colors(t4_, t4_label_, /*dark=*/false);
-        lv_obj_add_flag(t3_left, LV_OBJ_FLAG_CLICKABLE);
-        lv_obj_add_event_cb(t3_left, &Tiles::on_tile_clicked, LV_EVENT_CLICKED, this);
+        lv_obj_add_flag(t3_, LV_OBJ_FLAG_CLICKABLE);
+        lv_obj_add_event_cb(t3_, &Tiles::on_tile_clicked, LV_EVENT_CLICKED, this);
 
-        apply_bg_color(t3_left, /*dark=*/false);
-        apply_text_color(t3_left_label_, /*dark=*/false);
-    }
-
-        // Tile #3 mid
-    {
-        t3_mid_label_ = lv_label_create(t3_mid);
-        lv_label_set_text(t3_mid_label_, "Location Selectino");
-        lv_obj_set_style_text_font(t3_mid_label_, &lv_font_montserrat_48, 0);
-        lv_obj_center(t3_mid_label_);
-
-        //apply_tile_colors(t4_, t4_label_, /*dark=*/false);
-        lv_obj_add_flag(t3_mid, LV_OBJ_FLAG_CLICKABLE);
-        lv_obj_add_event_cb(t3_mid, &Tiles::on_tile_clicked, LV_EVENT_CLICKED, this);
-
-        apply_bg_color(t3_mid, /*dark=*/false);
-        apply_text_color(t3_mid_label_, /*dark=*/false);
-    }
-
-        // Tile #3 right
-    {
-        t3_right_label_ = lv_label_create(t3_right);
-        lv_label_set_text(t3_right_label_, "Location Selectino");
-        lv_obj_set_style_text_font(t3_right_label_, &lv_font_montserrat_48, 0);
-        lv_obj_center(t3_right_label_);
-
-        //apply_tile_colors(t4_, t4_label_, /*dark=*/false);
-        lv_obj_add_flag(t3_right, LV_OBJ_FLAG_CLICKABLE);
-        lv_obj_add_event_cb(t3_right, &Tiles::on_tile_clicked, LV_EVENT_CLICKED, this);
-
-        apply_bg_color(t3_right, /*dark=*/false);
-        apply_text_color(t3_right_label_, /*dark=*/false);
+        apply_bg_color(t3_, /*dark=*/false);
+        apply_text_color(t3_label_, /*dark=*/false);
     }
 
     // Tile #4
     {
         t4_label_ = lv_label_create(t4_);
-        lv_label_set_text(t4_label_, "7 Days Weather Forecast!!");
+        lv_label_set_text(t4_label_, "7 Day Weather Forecast");
         lv_obj_set_style_text_font(t4_label_, &lv_font_montserrat_48, 0);
         lv_obj_center(t4_label_);
 
@@ -143,6 +109,14 @@ void Tiles::create_ui()
         apply_bg_color(t5_, /*dark=*/false);
         apply_text_color(t5_label_, /*dark=*/false);
     }
+    // Gör t2_ till aktiv tile (startpunkt)
+    //lv_obj_set_tile(tileview_, t2_, LV_ANIM_OFF);
+
+    // För säkerhets skull – stäng av scroll chain som kan störa swipe
+    lv_obj_clear_flag(tileview_, LV_OBJ_FLAG_SCROLL_CHAIN_HOR);
+    lv_obj_clear_flag(tileview_, LV_OBJ_FLAG_SCROLL_CHAIN_VER);
+    lv_obj_set_tile(tileview_, t1_, LV_ANIM_OFF);  // Gör t1_ till aktiv tile
+
     
 }
 
@@ -166,22 +140,9 @@ void Tiles::on_tile_clicked(lv_event_t* e)
     auto* self = static_cast<Tiles*>(lv_event_get_user_data(e));
     lv_obj_t* clicked_tile = lv_event_get_target(e);
 
-    // Om t1_ klickas → navigera till t2_ (0,0)
-    //if (clicked_tile == self->t1_)
-    //{
-        // Hämta storlek på tileview
-    //    lv_coord_t w = lv_obj_get_width(self->tileview_);
-     //   lv_coord_t h = lv_obj_get_height(self->tileview_);
-
-        // t2 ligger på kolumn 0, rad 0
-    //    lv_obj_scroll_to(self->tileview_, 0 * w, 0 * h, LV_ANIM_ON);
-    //    lv_obj_del(self->t1_);
-
-      //  return;
-    //}
-
     if (clicked_tile == self->t1_)
 {
+    lv_obj_set_tile(self->tileview_, self->t2_, LV_ANIM_ON);
     // Ta bort tile 1 när den klickas
     lv_obj_del(self->t1_);
     self->t1_ = nullptr; // säkerhetsåtgärd
