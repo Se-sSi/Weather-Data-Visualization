@@ -18,4 +18,6 @@ protected:
 
     void apply_bg_color(bool dark);
     void apply_text_color(lv_obj_t* label, bool dark);
+
+    
 };

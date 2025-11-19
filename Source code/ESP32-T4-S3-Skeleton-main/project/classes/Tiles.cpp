@@ -27,11 +27,23 @@ void Tiles::on_tile_clicked(lv_event_t* e)
     Tiles* self = static_cast<Tiles*>(lv_event_get_user_data(e));
     lv_obj_t* clicked = lv_event_get_target(e);
 
-    if (clicked == self->weatherTile_->get_obj())
+    if (clicked == self->weatherTile_->get_obj() or clicked == self->historicalTile_->get_obj())
         lv_obj_set_tile(self->tileview_, self->optionTile_->get_obj(), LV_ANIM_ON);
 
     // ... fortsätt med fler navigationer som du vill
 }
+
+
+// void Tiles::on_tile_clicked(lv_event_t* e)
+// {
+//     Tiles* self = static_cast<Tiles*>(lv_event_get_user_data(e));
+//     lv_obj_t* clicked = lv_event_get_target(e);
+
+//     if (clicked == self->weatherTile_->get_obj() or clicked == self->historicalTile_->get_obj())
+//         lv_obj_set_tile(self->tileview_, self->optionTile_->get_obj(), LV_ANIM_ON);
+
+//     // ... fortsätt med fler navigationer som du vill
+// }
 
 
 
