@@ -4,7 +4,7 @@
 class HistoricalTile : public BaseTile {
 public:
     HistoricalTile(lv_obj_t* parent);
+    lv_obj_t* title_;
 
 private:
-    lv_obj_t* title_;
 };

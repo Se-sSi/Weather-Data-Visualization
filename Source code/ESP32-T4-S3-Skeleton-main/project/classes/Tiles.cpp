@@ -25,12 +25,23 @@ void Tiles::create_ui()
 void Tiles::on_tile_clicked(lv_event_t* e)
 {
     Tiles* self = static_cast<Tiles*>(lv_event_get_user_data(e));
-    lv_obj_t* clicked = lv_event_get_target(e);
+    self->dark = !self->dark;
 
-    if (clicked == self->weatherTile_->get_obj() or clicked == self->historicalTile_->get_obj())
-        lv_obj_set_tile(self->tileview_, self->optionTile_->get_obj(), LV_ANIM_ON);
+    self->weatherTile_->apply_bg_color(self->dark);
+    self->optionTile_->apply_bg_color(self->dark);
+    self->weekTile_->apply_bg_color(self->dark);
+    self->historicalTile_->apply_bg_color(self->dark);
 
-    // ... fortsätt med fler navigationer som du vill
+    self->weatherTile_->apply_text_color(self->weatherTile_->title_, self->dark);
+    self->weatherTile_->apply_text_color(self->weatherTile_->version_, self->dark);
+    self->weatherTile_->apply_text_color(self->weatherTile_->group_, self->dark);
+
+    self->optionTile_->apply_text_color(self->optionTile_->title_, self->dark);
+    self->weekTile_->apply_text_color(self->weekTile_->title_, self->dark);
+    self->historicalTile_->apply_text_color(self->historicalTile_->title_, self->dark);
+
+
+    //void apply_text_color(lv_obj_t* label, bool dark);
 }
 
 

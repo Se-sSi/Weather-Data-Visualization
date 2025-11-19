@@ -12,7 +12,7 @@ WeatherTile::WeatherTile(lv_obj_t* parent)
     lv_obj_align(title_, LV_ALIGN_CENTER, 0, -60);
 
     version_ = lv_label_create(tile_);
-    lv_label_set_text(version_, "V0.1");
+    lv_label_set_text(version_, "V0.2");
     lv_obj_set_style_text_font(version_, &lv_font_montserrat_24, 0);
     lv_obj_align(version_, LV_ALIGN_CENTER, 0, -10);
 

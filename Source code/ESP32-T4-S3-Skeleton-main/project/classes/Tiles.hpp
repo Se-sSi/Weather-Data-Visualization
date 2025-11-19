@@ -20,4 +20,6 @@ private:
     HistoricalTile* historicalTile_ = nullptr;
 
     static void on_tile_clicked(lv_event_t* e);
+
+    bool dark = false;
 };
