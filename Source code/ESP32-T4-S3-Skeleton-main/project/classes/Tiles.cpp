@@ -1,5 +1,45 @@
 #include "Tiles.hpp"
 
+void Tiles::create_ui()
+{
+    tileview_ = lv_tileview_create(lv_scr_act());
+    lv_obj_set_size(tileview_, LV_HOR_RES, LV_VER_RES);
+    lv_obj_set_scrollbar_mode(tileview_, LV_SCROLLBAR_MODE_OFF);
+
+    // Skapa tiles
+    weatherTile_ = new WeatherTile(tileview_);
+    optionTile_ = new OptionTile(tileview_);
+    weekTile_ = new WeekTile(tileview_);
+    historicalTile_ = new HistoricalTile(tileview_);
+
+    // Lägg till event callbacks för klick
+    lv_obj_add_event_cb(weatherTile_->get_obj(), Tiles::on_tile_clicked, LV_EVENT_CLICKED, this);
+    lv_obj_add_event_cb(optionTile_->get_obj(), Tiles::on_tile_clicked, LV_EVENT_CLICKED, this);
+    lv_obj_add_event_cb(weekTile_->get_obj(), Tiles::on_tile_clicked, LV_EVENT_CLICKED, this);
+    lv_obj_add_event_cb(historicalTile_->get_obj(), Tiles::on_tile_clicked, LV_EVENT_CLICKED, this);
+
+    // Sätt starttile
+    lv_obj_set_tile(tileview_, weatherTile_->get_obj(), LV_ANIM_OFF);
+}
+
+void Tiles::on_tile_clicked(lv_event_t* e)
+{
+    Tiles* self = static_cast<Tiles*>(lv_event_get_user_data(e));
+    lv_obj_t* clicked = lv_event_get_target(e);
+
+    if (clicked == self->weatherTile_->get_obj())
+        lv_obj_set_tile(self->tileview_, self->optionTile_->get_obj(), LV_ANIM_ON);
+
+    // ... fortsätt med fler navigationer som du vill
+}
+
+
+
+
+
+
+
+/*
 // Code from skeleton template (some modifications). Not properly documented
 void Tiles::create_ui()
 {
@@ -56,11 +96,9 @@ void Tiles::create_ui()
         lv_obj_add_flag(t2_, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_add_event_cb(t2_, &Tiles::on_tile_clicked, LV_EVENT_CLICKED, this);
 
-        // Apply colors
-        apply_bg_color(t2_, /*dark=*/false);
-        apply_text_color(t2_title_label_, /*dark=*/false);
-        apply_text_color(t2_ver_label_, /*dark=*/false);
-        apply_text_color(t2_group_label_, /*dark=*/false);
+        apply_text_color(t2_title_label_, false);
+        apply_text_color(t2_ver_label_, false);
+        apply_text_color(t2_group_label_,false);
         
 
     }
@@ -72,12 +110,12 @@ void Tiles::create_ui()
         lv_obj_set_style_text_font(t3_label_, &lv_font_montserrat_48, 0);
         lv_obj_center(t3_label_);
 
-        //apply_tile_colors(t4_, t4_label_, /*dark=*/false);
+
         lv_obj_add_flag(t3_, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_add_event_cb(t3_, &Tiles::on_tile_clicked, LV_EVENT_CLICKED, this);
 
-        apply_bg_color(t3_, /*dark=*/false);
-        apply_text_color(t3_label_, /*dark=*/false);
+        apply_bg_color(t3_,false);
+        apply_text_color(t3_label_,false);
     }
 
     // Tile #4
@@ -87,12 +125,11 @@ void Tiles::create_ui()
         lv_obj_set_style_text_font(t4_label_, &lv_font_montserrat_48, 0);
         lv_obj_center(t4_label_);
 
-        //apply_tile_colors(t4_, t4_label_, /*dark=*/false);
         lv_obj_add_flag(t4_, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_add_event_cb(t4_, &Tiles::on_tile_clicked, LV_EVENT_CLICKED, this);
 
-        apply_bg_color(t4_, /*dark=*/false);
-        apply_text_color(t4_label_, /*dark=*/false);
+        apply_bg_color(t4_,false);
+        apply_text_color(t4_label_,false);
     }
 
         // Tile #5
@@ -102,12 +139,11 @@ void Tiles::create_ui()
         lv_obj_set_style_text_font(t5_label_, &lv_font_montserrat_48, 0);
         lv_obj_center(t5_label_);
 
-        //apply_tile_colors(t4_, t4_label_, /*dark=*/false);
         lv_obj_add_flag(t5_, LV_OBJ_FLAG_CLICKABLE);
         lv_obj_add_event_cb(t5_, &Tiles::on_tile_clicked, LV_EVENT_CLICKED, this);
 
-        apply_bg_color(t5_, /*dark=*/false);
-        apply_text_color(t5_label_, /*dark=*/false);
+        apply_bg_color(t5_,false);
+        apply_text_color(t5_label_, false);
     }
     // Gör t2_ till aktiv tile (startpunkt)
     //lv_obj_set_tile(tileview_, t2_, LV_ANIM_OFF);
@@ -164,3 +200,4 @@ void Tiles::on_tile_clicked(lv_event_t* e)
     self->apply_text_color(self->t4_label_, self->dark);
 }
 
+*/

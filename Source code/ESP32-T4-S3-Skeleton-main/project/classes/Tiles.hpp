@@ -1,43 +1,23 @@
 #pragma once
-
 #include <lvgl.h>
 
-class Tiles
-{
-    public:
-        void create_ui();
+#include "BaseTile.hpp"
+#include "Tile2.hpp"
+#include "Tile3.hpp"
+#include "Tile4.hpp"
+#include "Tile5.hpp"
 
-    private:
-        static void on_tile_clicked(lv_event_t* e);
-        void create_option_tile();
-        static void gesture_event_cb(lv_event_t* e);
-        static void show_option_tile_cb(lv_event_t* e);
-        void apply_bg_color(lv_obj_t* tile, bool dark);
-        void apply_text_color(lv_obj_t* label, bool dark);
-    
-        lv_obj_t* tileview_ = nullptr;
+class Tiles {
+public:
+    void create_ui();
 
-        lv_obj_t* t2_;
-        lv_obj_t* t2_title_label_ = nullptr;
-        lv_obj_t* t2_ver_label_ = nullptr;
-        lv_obj_t* t2_group_label_ = nullptr;
+private:
+    lv_obj_t* tileview_ = nullptr;
 
+    WeatherTile* weatherTile_ = nullptr;
+    OptionTile* optionTile_ = nullptr;
+    WeekTile* weekTile_ = nullptr;
+    HistoricalTile* historicalTile_ = nullptr;
 
-        lv_obj_t* t3_;
-        lv_obj_t* t3_label_ = nullptr;
-
-
-        lv_obj_t* t5_;
-        lv_obj_t* t5_label_ = nullptr;
-
-        lv_obj_t* t4_;
-        lv_obj_t* t4_label_ = nullptr;
-
-        lv_obj_t* t1_;
-        lv_obj_t* t1_label_ = nullptr;
-
-        lv_obj_t* option_tile_;
-        
-
-        bool dark = false;  // start in light
+    static void on_tile_clicked(lv_event_t* e);
 };
