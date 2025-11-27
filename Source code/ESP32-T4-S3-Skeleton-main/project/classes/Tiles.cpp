@@ -22,9 +22,9 @@ void Tiles::create_ui()
     lv_obj_set_tile(tileview_, weatherTile_->get_obj(), LV_ANIM_OFF);
 }
 
-void Tiles::on_tile_clicked(lv_event_t* e)
+void Tiles::on_tile_clicked(lv_event_t *e)
 {
-    Tiles* self = static_cast<Tiles*>(lv_event_get_user_data(e));
+    Tiles *self = static_cast<Tiles *>(lv_event_get_user_data(e));
     self->dark = !self->dark;
 
     self->weatherTile_->apply_bg_color(self->dark);
@@ -39,11 +39,26 @@ void Tiles::on_tile_clicked(lv_event_t* e)
     self->optionTile_->apply_text_color(self->optionTile_->title_, self->dark);
     self->weekTile_->apply_text_color(self->weekTile_->title_, self->dark);
     self->historicalTile_->apply_text_color(self->historicalTile_->title_, self->dark);
-
-
-    //void apply_text_color(lv_obj_t* label, bool dark);
 }
 
+void Tiles::on_theme_change(lv_event_t *e)
+{
+    Tiles *self = static_cast<Tiles *>(lv_event_get_user_data(e));
+    self->dark = !self->dark;
+
+    self->weatherTile_->apply_bg_color(self->dark);
+    self->optionTile_->apply_bg_color(self->dark);
+    self->weekTile_->apply_bg_color(self->dark);
+    self->historicalTile_->apply_bg_color(self->dark);
+
+    self->weatherTile_->apply_text_color(self->weatherTile_->title_, self->dark);
+    self->weatherTile_->apply_text_color(self->weatherTile_->version_, self->dark);
+    self->weatherTile_->apply_text_color(self->weatherTile_->group_, self->dark);
+
+    self->optionTile_->apply_text_color(self->optionTile_->title_, self->dark);
+    self->weekTile_->apply_text_color(self->weekTile_->title_, self->dark);
+    self->historicalTile_->apply_text_color(self->historicalTile_->title_, self->dark);
+}
 
 // void Tiles::on_tile_clicked(lv_event_t* e)
 // {
@@ -56,12 +71,6 @@ void Tiles::on_tile_clicked(lv_event_t* e)
 //     // ... fortsätt med fler navigationer som du vill
 // }
 
-
-
-
-
-
-
 /*
 // Code from skeleton template (some modifications). Not properly documented
 void Tiles::create_ui()
@@ -73,13 +82,13 @@ void Tiles::create_ui()
 
     // Add tiles
     t2_ = lv_tileview_add_tile(tileview_, 0, 0, LV_DIR_ALL);
-    
+
     t3_ = lv_tileview_add_tile(tileview_, 0, -1, LV_DIR_ALL);
-    
+
     t4_ = lv_tileview_add_tile(tileview_, -1, 0, LV_DIR_ALL);
-    
+
     t5_ = lv_tileview_add_tile(tileview_, 1, 0, LV_DIR_ALL);
-    
+
     lv_obj_add_flag(t2_, LV_OBJ_FLAG_HIDDEN);
     t1_ = lv_tileview_add_tile(tileview_, 0, 0, LV_DIR_NONE);
         // Tile #1
@@ -122,7 +131,7 @@ void Tiles::create_ui()
         apply_text_color(t2_title_label_, false);
         apply_text_color(t2_ver_label_, false);
         apply_text_color(t2_group_label_,false);
-        
+
 
     }
 
@@ -176,13 +185,13 @@ void Tiles::create_ui()
     lv_obj_clear_flag(tileview_, LV_OBJ_FLAG_SCROLL_CHAIN_VER);
     lv_obj_set_tile(tileview_, t1_, LV_ANIM_OFF);  // Gör t1_ till aktiv tile
 
-    
+
 }
 
 void Tiles::apply_bg_color(lv_obj_t* tile, bool dark)
 {
     lv_obj_set_style_bg_opa(tile, LV_OPA_COVER, 0);
-    lv_obj_set_style_bg_color(tile, 
+    lv_obj_set_style_bg_color(tile,
     dark ? lv_color_make(30, 30, 60)    // dark mode color (R,G,B)
          : lv_color_make(172, 192, 226), // light mode color (R,G,B)
     0);;

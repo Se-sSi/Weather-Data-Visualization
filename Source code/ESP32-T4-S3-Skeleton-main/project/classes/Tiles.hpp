@@ -7,19 +7,21 @@
 #include "Tile4.hpp"
 #include "Tile5.hpp"
 
-class Tiles {
+class Tiles
+{
 public:
     void create_ui();
 
 private:
-    lv_obj_t* tileview_ = nullptr;
+    lv_obj_t *tileview_ = nullptr;
 
-    WeatherTile* weatherTile_ = nullptr;
-    OptionTile* optionTile_ = nullptr;
-    WeekTile* weekTile_ = nullptr;
-    HistoricalTile* historicalTile_ = nullptr;
+    WeatherTile *weatherTile_ = nullptr;
+    OptionTile *optionTile_ = nullptr;
+    WeekTile *weekTile_ = nullptr;
+    HistoricalTile *historicalTile_ = nullptr;
 
-    static void on_tile_clicked(lv_event_t* e);
+    static void on_tile_clicked(lv_event_t *e);
+    static void on_theme_change(lv_event_t *e);
 
     bool dark = false;
 };
