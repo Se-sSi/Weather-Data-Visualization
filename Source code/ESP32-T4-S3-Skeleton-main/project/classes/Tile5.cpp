@@ -28,12 +28,18 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
     lv_chart_set_point_count(chart_, 30);
     lv_obj_set_style_line_rounded(chart_, true, LV_PART_ITEMS);
 
+    // Y-labels // Not well done
+    for (int i = 0; i <= 8; i++)
+    {
+        lv_obj_t *lbl = lv_label_create(chart_);
+        int val = 180 + i * 10; // Y-axis value
+        lv_label_set_text_fmt(lbl, "%d", val);
+        lv_obj_align(lbl, LV_ALIGN_LEFT_MID, 0, -60 + i * 15); // adjust positioning
+    }
+
     // Series
     series_ = lv_chart_add_series(chart_, lv_palette_main(LV_PALETTE_BLUE), LV_CHART_AXIS_PRIMARY_Y);
-    lv_chart_set_range(chart_, LV_CHART_AXIS_PRIMARY_Y, 180, 260);
-
-    // Y-axis min / max
-    lv_chart_set_range(chart_, LV_CHART_AXIS_PRIMARY_Y, 180, 260);
+    lv_chart_set_range(chart_, LV_CHART_AXIS_PRIMARY_Y, 180, 260); // Not well done
 
     // Example temp values (°C ×10)
     int temp_data_Humidity[30] = {
