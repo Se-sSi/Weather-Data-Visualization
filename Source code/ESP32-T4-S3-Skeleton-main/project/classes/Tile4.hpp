@@ -5,6 +5,7 @@
 
 // deklarera Cogwheel-bilden
 LV_IMG_DECLARE(Cogwheel);
+//LV_IMG_DECLARE(Cloudy);
 
 class WeekTile : public BaseTile {
 public:
