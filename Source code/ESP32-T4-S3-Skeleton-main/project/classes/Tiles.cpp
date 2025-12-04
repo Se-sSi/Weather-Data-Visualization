@@ -37,10 +37,14 @@ void Tiles::on_tile_clicked(lv_event_t *e)
     self->weatherTile_->apply_text_color(self->weatherTile_->group_, self->dark);
 
     self->optionTile_->apply_text_color(self->optionTile_->title_, self->dark);
+    self->optionTile_->apply_text_color(self->optionTile_->selected_text, self->dark);
+
+
     self->weekTile_->apply_text_color(self->weekTile_->title_, self->dark);
     self->historicalTile_->apply_text_color(self->historicalTile_->title_, self->dark);
 }
 
+//NOT IN USE, SHOULD REPLACE "on_tile_clicked"
 void Tiles::on_theme_change(lv_event_t *e)
 {
     Tiles *self = static_cast<Tiles *>(lv_event_get_user_data(e));
