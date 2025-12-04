@@ -8,7 +8,8 @@ public:
     lv_obj_t *title_;
     lv_obj_t *reset_text;
     lv_obj_t *selected_text;
-    std::string city = "Goteborg";
+    std::string selected_city = "Goteborg";
+    std::string default_city = "Karlskrona";
     
     
 

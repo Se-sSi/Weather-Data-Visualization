@@ -23,7 +23,7 @@ OptionTile::OptionTile(lv_obj_t *parent)
     lv_obj_align(reset_text, LV_ALIGN_CENTER, 0, 0);
 
     selected_text = lv_label_create(tile_);
-    lv_label_set_text(selected_text, ("Current selected city: " + city).c_str());
+    lv_label_set_text(selected_text, ("Current selected city: " + selected_city).c_str());
     lv_obj_set_style_text_font(selected_text, &lv_font_montserrat_30, 0);
     lv_obj_align(selected_text, LV_ALIGN_CENTER, 0, 0);
 
@@ -37,7 +37,7 @@ OptionTile::OptionTile(lv_obj_t *parent)
 void OptionTile::btn_event_cb(lv_event_t *e)
 {
     OptionTile* self = static_cast<OptionTile*>(lv_event_get_user_data(e));
-    self->city = "Karlskrona";
+    self->selected_city = self->default_city;
 
-    lv_label_set_text(self->selected_text, ("Current selected city: " + self->city).c_str());
+    lv_label_set_text(self->selected_text, ("Current selected city: " + self->selected_city).c_str());
 }
