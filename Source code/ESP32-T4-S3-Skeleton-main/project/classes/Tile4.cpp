@@ -1,5 +1,5 @@
 #include "Tile4.hpp"
-#include "C:\Users\Matti\Documents\C++\Weather-Data-Visualization\Source code\ESP32-T4-S3-Skeleton-main\src\Cogwheel.hpp"
+#include "../../src/Cogwheel.hpp"
 
 
 WeekTile::WeekTile(lv_obj_t* parent)
