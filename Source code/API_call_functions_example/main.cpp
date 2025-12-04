@@ -9,6 +9,7 @@ size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* s) 
     return size * nmemb;
 }
 
+// Returns raw data as a string from the given URL
 std::string get_raw_data(std::string url)
 {
     CURL* curl = curl_easy_init();
@@ -28,7 +29,7 @@ std::string get_raw_data(std::string url)
     }
 }
 
-
+// Debug function to print JSON structure with types
 void print_json(const nlohmann::json& j, int indent = 0) {
     const std::string pad(indent, ' ');
 
@@ -57,6 +58,8 @@ void print_json(const nlohmann::json& j, int indent = 0) {
     }
 }
 
+
+// Converts epoch milliseconds to human-readable date-time string
 std::string epoch_ms_to_datetime(long long ms_since_epoch)
 {
     std::time_t t = static_cast<std::time_t>(ms_since_epoch / 1000);
@@ -73,23 +76,32 @@ std::string epoch_ms_to_datetime(long long ms_since_epoch)
     return oss.str();
 }
 
-struct Sample {
+// Data structure for historical samples
+struct Historical_sample {
     long long time_ms;  // date from SMHI (ms since epoch)
     float value;     // temperature, humidity, etc.
 };
 
+// Data structure for forecast samples
+struct Forecast_sample {
+    std::string date;  // date from SMHI
+    float temperature;
+    int humidity;
+    float wind_speed;
+};
 
-std::vector<Sample> raw_data_to_array(std::string data_string)
+// Parses raw historical data JSON string into an array of Historical_sample
+std::vector<Historical_sample> raw_historical_data_to_array(std::string data_string)
 {
     nlohmann::json parsed = nlohmann::json::parse(data_string);
 
-    std::vector<Sample> data;
+    std::vector<Historical_sample> data;
 
     const auto& arr = parsed.at("value");
     data.reserve(arr.size());
     for (const auto& item : arr)
     {
-        Sample sample;
+        Historical_sample sample;
         sample.time_ms = item.value("date", 0LL);
         sample.value = std::stof(item.value("value", "nan"));
         data.push_back(sample);
@@ -98,7 +110,32 @@ std::vector<Sample> raw_data_to_array(std::string data_string)
     return data;
 }
 
-void print_data(std::vector<Sample> data)
+// Parses raw forecast data JSON string into an array of Forecast_sample
+std::vector<Forecast_sample> raw_forecast_data_to_array(std::string data_string)
+{
+    nlohmann::json parsed = nlohmann::json::parse(data_string);
+
+    std::vector<Forecast_sample> data;
+
+    const auto& arr = parsed.at("timeSeries");
+    data.reserve(arr.size());
+    for (const auto& item : arr)
+    {
+        Forecast_sample sample;
+        sample.date = item.value("time", std::string{});
+        const auto& d = item.at("data");
+        sample.temperature = d.value("air_temperature", 0.0f);
+        sample.humidity    = d.value("relative_humidity", 0.0f);
+        sample.wind_speed  = d.value("wind_speed", 0.0f);
+        data.push_back(sample);
+    }
+    
+    return data;
+}
+
+
+// Prints historical data samples
+void print_historical_data(std::vector<Historical_sample> data)
 {
     for (auto& sample : data)
     {
@@ -106,22 +143,32 @@ void print_data(std::vector<Sample> data)
     }
 }
 
+// Prints forecast data samples
+void print_forecast_data(std::vector<Forecast_sample> data)
+{
+    for (auto& sample : data)
+    {
+        std::cout << "Date: " << sample.date << " Temperature: " << sample.temperature << " Humidity: " << sample.humidity << " Wind speed: " << sample.wind_speed << "\n";
+    }
+}
 
+// Maps city names to their corresponding IDs
 int get_city_id(std::string city_name)
 {
     if (city_name == "Karlskrona")       return 65090;
     if (city_name == "Stockholm")        return 98210;
-    if (city_name == "Göteborg")         return 71420; 
-    if (city_name == "Malmö")            return 52350;
+    if (city_name == "Goteborg")         return 71420; 
+    if (city_name == "Malmo")            return 52350;
     if (city_name == "Uppsala")          return 97510;
-    if (city_name == "Västerås")         return 96080;
-    if (city_name == "Örebro")           return 95160;
-    if (city_name == "Linköping")        return 85240;
+    if (city_name == "Vasteras")         return 96080;
+    if (city_name == "orebro")           return 95160;
+    if (city_name == "Linkoping")        return 85240;
     if (city_name == "Helsingborg")      return 62040;
-    if (city_name == "Jönköping")        return 74470;
-    if (city_name == "Norrköping")       return 86360;
+    if (city_name == "Jonkoping")        return 74470;
+    if (city_name == "Norrkoping")       return 86360;
 }
 
+// Maps data type names to their corresponding type IDs
 int get_type_id(std::string type_name)
 {
     if (type_name == "Temperature")         return 1;   // Temperature every hour
@@ -140,43 +187,117 @@ int get_type_id(std::string type_name)
     // etc
 }
 
-std::string get_city_url(int city_id, int type_id)
+
+// Constructs the URL for historical data based on city ID and type ID
+std::string get_city_historical_url(int city_id, int type_id)
 {
     return "https://opendata-download-metobs.smhi.se/api/version/1.0/parameter/" + std::to_string(type_id) + "/station/" + std::to_string(city_id) + "/period/latest-months/data.json";
 }
 
-std::vector<Sample> get_city_data(std::string city_name, std::string type_name)
+// Constructs the URL for forecast data based on latitude and longitude
+std::string get_city_forecast_url(float lat, float lon)
 {
-    std::string url = get_city_url(get_city_id(city_name), get_type_id(type_name));
+    return "https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/" + std::to_string(lon) + "/lat/" +  std::to_string(lat) + "/data.json";
+}
+
+
+// Retrieves historical data for a given city and data type
+std::vector<Historical_sample> get_city_historical_data(std::string city_name, std::string type_name)
+{
+    std::string url = get_city_historical_url(get_city_id(city_name), get_type_id(type_name));
     std::string raw_data = get_raw_data(url);
-    return raw_data_to_array(raw_data);
+    return raw_historical_data_to_array(raw_data);
+}
+
+
+// Maps city names to their corresponding latitude
+float get_city_lat(std::string city_name)
+{
+    if (city_name == "Karlskrona")       return 56.1612;
+    if (city_name == "Stockholm")        return 59.3293;
+    if (city_name == "Goteborg")         return 57.7089; 
+    if (city_name == "Malmo")            return 55.6049;
+    if (city_name == "Uppsala")          return 59.8586;
+    if (city_name == "Vasteras")         return 59.6099;
+    if (city_name == "orebro")           return 59.2753;
+    if (city_name == "Linkoping")        return 58.4109;
+    if (city_name == "Helsingborg")      return 56.0465;
+    if (city_name == "Jonkoping")        return 57.7826;
+    if (city_name == "Norrkoping")       return 58.5877;
+}
+
+// Maps city names to their corresponding longitude
+float get_city_lon(std::string city_name)
+{
+    if (city_name == "Karlskrona")       return 15.5869;
+    if (city_name == "Stockholm")        return 18.0686;
+    if (city_name == "Goteborg")         return 11.9746; 
+    if (city_name == "Malmo")            return 13.0038;
+    if (city_name == "Uppsala")          return 17.6389;
+    if (city_name == "Vasteras")         return 16.5448;
+    if (city_name == "orebro")           return 15.2133;
+    if (city_name == "Linkoping")        return 15.6167;
+    if (city_name == "Helsingborg")      return 12.6945;
+    if (city_name == "Jonkoping")        return 14.1618;
+    if (city_name == "Norrkoping")       return 16.1771;
+}
+
+
+// Retrieves forecast data for a given city
+std::vector<Forecast_sample> get_city_forecast_data(std::string city_name)
+{
+    std::string url = get_city_forecast_url(get_city_lat(city_name), get_city_lon(city_name));
+    std::string raw_data = get_raw_data(url);
+    return raw_forecast_data_to_array(raw_data);
 }
 
 
 int main() {
-    std::string city_name = "Karlskrona";
-    std::cout << "Enter city name (e.g., Stockholm, Göteborg, Malmö) or press Enter for default (Karlskrona): ";
-    std::string input;
-    std::getline(std::cin, input);
+    // Forecast data example
+    std::cout << std::endl << "Forecast data example:\n";
+    std::string city_name_forecast = "Karlskrona";
+    std::cout << "Enter city name (e.g., Stockholm, Goteborg, Malmo) or press Enter for default (Karlskrona): ";
+    std::string input_city_forecast;
+    std::getline(std::cin, input_city_forecast);
     
-    if (!input.empty()) {
-        city_name = input;
+    if (!input_city_forecast.empty()) {
+        city_name_forecast = input_city_forecast;
     }
 
-    std::string type_name = "Temperature";
-    std::cout << "Enter type name (e.g., Temperature, Humidity, Wind speed) or press Enter for default (Temperature): ";
-    std::getline(std::cin, input);
+    std::vector<Forecast_sample> array_data_forecast = get_city_forecast_data(city_name_forecast); // function to use in project
+    std::cout << city_name_forecast << ":\n";
+    print_forecast_data(array_data_forecast);
+
+
+
+    // Historical data example
+    std::cout << std::endl << "Historical data example:\n";
+    std::string city_name_historical = "Karlskrona";
+    std::cout << "Enter city name (e.g., Stockholm, Goteborg, Malmo) or press Enter for default (Karlskrona): ";
+    std::string input_city_historical;
+    std::getline(std::cin, input_city_historical);
     
-    if (!input.empty()) {
-        type_name = input;
+    if (!input_city_historical.empty()) {
+        city_name_historical = input_city_historical;
     }
 
-    std::vector<Sample> array_data = get_city_data(city_name, type_name); // function to use in project
-    std::cout << type_name << " data for " << city_name << ":\n";
+    std::string type_name_historical = "Temperature";
+    std::cout << "Enter data type (e.g., Temperature, Humidity) or press Enter for default (Temperature): ";
+    std::string input_type_historical;
+    std::getline(std::cin, input_type_historical);
+    
+    if (!input_type_historical.empty()) {
+        type_name_historical = input_type_historical;
+    }
 
-    print_data(array_data);
+    std::vector<Historical_sample> array_data_historical = get_city_historical_data(city_name_historical, type_name_historical); // function to use in project
+    std::cout << city_name_historical << ":\n";
+    print_historical_data(array_data_historical);
+
+
 
     std::cout << std::endl << "Press Enter to close.";
     std::cin.get();
+    
     return 0;
 }
