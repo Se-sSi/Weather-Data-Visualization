@@ -3,7 +3,7 @@
 
 OptionTile::OptionTile(lv_obj_t *parent)
 {
-    tile_ = lv_tileview_add_tile(parent, 1, 0, LV_DIR_ALL);
+    tile_ = lv_tileview_add_tile(parent, 1, 0, LV_DIR_BOTTOM);
 
     title_ = lv_label_create(tile_);
     lv_label_set_text(title_, "Options");
