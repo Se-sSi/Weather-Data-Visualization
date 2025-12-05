@@ -12,13 +12,13 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
     lv_obj_set_style_text_font(title_, &lv_font_montserrat_48, 0);
     lv_obj_align(title_, LV_ALIGN_TOP_MID, 0, 60);
 
-    // --- Create dropdown ---
+    // --- Create ---
     lv_obj_t *dd = lv_dropdown_create(tile_);
     fill_dropdown_with_params(dd);
     lv_obj_set_size(dd, 200, 40);
     lv_obj_align(dd, LV_ALIGN_TOP_RIGHT, -10, 10);
 
-    // Chart
+    // --- Chart ---
     chart_ = lv_chart_create(tile_);
     lv_obj_set_size(chart_, 560, 320);
     lv_obj_align(chart_, LV_ALIGN_BOTTOM_MID, 0, -10);
@@ -37,7 +37,8 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
         lv_obj_align(lbl, LV_ALIGN_LEFT_MID, 0, -60 + i * 15); // adjust positioning
     }
 
-    // Series
+    // --- Series ---
+    // Used in creating the chart object
     series_ = lv_chart_add_series(chart_, lv_palette_main(LV_PALETTE_BLUE), LV_CHART_AXIS_PRIMARY_Y);
     lv_chart_set_range(chart_, LV_CHART_AXIS_PRIMARY_Y, 180, 260); // Not well done
 
@@ -50,13 +51,17 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
         228, 223, 220, 219, 221,
         224, 226, 229, 233, 236};
 
-    update_chart(this->chart_, this->series_, temp_data_Humidity, 30);
 
+    // Own created function to update the chart
+    update_chart(chart_, series_, temp_data_Humidity, 30);
+
+    // Setting the tile background color and tile text colors
     apply_bg_color(false);
     apply_text_color(title_, false);
 }
 
-void HistoricalTile::update_chart(lv_obj_t *chart, lv_chart_series_t *series, int *data, size_t length) // Kan ändras så att man skickar in en parameter som är namnet på det som ska visas t.ex. "humidity" och så anropar denna funktionen api funktionen
+// Function that is supposed to update the series with the data and refreshes the chart
+void HistoricalTile::update_chart(lv_obj_t *chart, lv_chart_series_t *series, int *data, size_t length)
 {
     if (!chart || !series)
         return;
@@ -78,10 +83,11 @@ void HistoricalTile::update_chart(lv_obj_t *chart, lv_chart_series_t *series, in
     lv_chart_refresh(chart);
 }
 
+// Creates the string needed for the dropdown
 void HistoricalTile::fill_dropdown_with_params(lv_obj_t *dd)
 {
-    const char *arr[3] = {"Humidity", "Temperature", "Wind Speed"};
-    size_t count = 3;
+    const char *arr[4] = {"Temperature", "Humidity", "Wind Speed", "Air Pressure"}; //REDIGERA DETTA UTAN TEST, KAN VARA FEL HÄR (LA TILL DEN AIR PRESSURE DÅ DET OCKSÅ ÄR EN PARAMETER SOM BEHÖVS)
+    size_t count = 4; //REDIGERA DETTA UTAN TEST, KAN VARA FEL HÄR (FRÅN 3 -> 4)
 
     std::string out;
     for (size_t i = 0; i < count; i++)
