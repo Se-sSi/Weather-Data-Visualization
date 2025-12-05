@@ -4,7 +4,7 @@
 HistoricalTile::HistoricalTile(lv_obj_t *parent)
 {
     // --- Tile ---
-    tile_ = lv_tileview_add_tile(parent, 2, 1, LV_DIR_ALL);
+    tile_ = lv_tileview_add_tile(parent, 2, 1, LV_DIR_LEFT);
 
     // --- Title ---
     title_ = lv_label_create(tile_);

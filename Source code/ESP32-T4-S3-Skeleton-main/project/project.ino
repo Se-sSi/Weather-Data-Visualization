@@ -11,8 +11,8 @@
 #include "main.hpp"
 
 // Wi-Fi credentials (Delete these before commiting to GitHub)
-static const char* WIFI_SSID     = "SSID";
-static const char* WIFI_PASSWORD = "PWD";
+static const char* WIFI_SSID     = "Gustavs iPhone 14 Pro";
+static const char* WIFI_PASSWORD = "1pfnom11h3am0";
 
 LilyGo_Class amoled;
 
