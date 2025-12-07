@@ -7,6 +7,7 @@
 #include "../../src/Snow.h"
 #include "../../src/Thunderstorm.h"
 #include "../../src/MostlyClear.h"
+// TODO: #include "../../src/Overcast.h"
 #include "../../src/Fog.h"
 #include "../../src/SMHIClient.hpp"
 #include <ArduinoJson.h>
@@ -37,42 +38,41 @@ WeekTile::WeekTile(lv_obj_t* parent)
     // --- Variables In Containers --- (will be filled from API)
     const char* weekDays[7] = {"", "", "", "", "", "", ""};
     const char* temperatures[7] = {"", "", "", "", "", "", ""};
-    const void* symbols[7] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
     // --- One Day Container ---
     for(int i = 0; i < 7; i++) 
     {
-    dayContainer[i] = lv_obj_create(weekContainer);
-    lv_obj_set_size(dayContainer[i], 400, 200); // fast bredd eller procent
-    lv_obj_set_style_pad_all(dayContainer[i], 8, 0);
-    lv_obj_set_style_bg_color(dayContainer[i], lv_color_make(220, 235, 255), 0);
-    lv_obj_set_style_radius(dayContainer[i], 10, 0);
+        dayContainer[i] = lv_obj_create(weekContainer);
+        lv_obj_set_size(dayContainer[i], 400, 200); // fast bredd eller procent
+        lv_obj_set_style_pad_all(dayContainer[i], 8, 0);
+        lv_obj_set_style_bg_color(dayContainer[i], lv_color_make(220, 235, 255), 0);
+        lv_obj_set_style_radius(dayContainer[i], 10, 0);
 
-    static lv_style_t style_day;
-    static lv_style_t style_temp;
+        static lv_style_t style_day;
+        static lv_style_t style_temp;
 
-    lv_style_init(&style_day);
-    lv_style_init(&style_temp);
+        lv_style_init(&style_day);
+        lv_style_init(&style_temp);
 
-    lv_style_set_text_font(&style_day, &lv_font_montserrat_34);
-    lv_style_set_text_font(&style_temp, &lv_font_montserrat_48);
+        lv_style_set_text_font(&style_day, &lv_font_montserrat_34);
+        lv_style_set_text_font(&style_temp, &lv_font_montserrat_48);
 
-    // --- Day ---
-    label_day[i] = lv_label_create(dayContainer[i]);
-    lv_label_set_text(label_day[i], weekDays[i]); // initially empty
-    lv_obj_add_style(label_day[i], &style_day, 0);
-    lv_obj_align(label_day[i], LV_ALIGN_CENTER, 70, 20);
+        // --- Day ---
+        label_day[i] = lv_label_create(dayContainer[i]);
+        lv_label_set_text(label_day[i], weekDays[i]); // initially empty
+        lv_obj_add_style(label_day[i], &style_day, 0);
+        lv_obj_align(label_day[i], LV_ALIGN_CENTER, 70, 20);
 
-    // --- Temp ---
-    label_temp[i] = lv_label_create(dayContainer[i]);
-    lv_label_set_text(label_temp[i], temperatures[i]); // initially empty
-    lv_obj_add_style(label_temp[i], &style_temp, 0);
-    lv_obj_align(label_temp[i], LV_ALIGN_TOP_MID, 70, 50);
+        // --- Temp ---
+        label_temp[i] = lv_label_create(dayContainer[i]);
+        lv_label_set_text(label_temp[i], temperatures[i]); // initially empty
+        lv_obj_add_style(label_temp[i], &style_temp, 0);
+        lv_obj_align(label_temp[i], LV_ALIGN_TOP_MID, 70, 50);
 
-    // --- Icon ---
-    icon_weather[i] = lv_img_create(dayContainer[i]);
-    lv_img_set_src(icon_weather[i], symbols[i]);            // initially null
-    lv_obj_align(icon_weather[i], LV_ALIGN_BOTTOM_MID, -90, -15);  // Placera längst ner
+        // --- Icon ---
+        icon_weather[i] = lv_img_create(dayContainer[i]);
+        lv_img_set_src(icon_weather[i], nullptr);            // initially null
+        lv_obj_align(icon_weather[i], LV_ALIGN_BOTTOM_MID, -90, -15);  // Placera längst ner
     }
 
     // Setting the tile background color and tile text colors
@@ -131,6 +131,7 @@ WeekTile::WeekTile(lv_obj_t* parent)
             if (item.containsKey("data") && item["data"].is<JsonObject>()) {
                 ta = item["data"]["air_temperature"] | item["data"]["t"] | 0.0f;
                 gotTemp = true;
+                wsymb = item["data"]["symbol_code"];
             } else if (item.containsKey("parameters") && item["parameters"].is<JsonArray>()) {
                 for (JsonObject p : item["parameters"].as<JsonArray>()) {
                     const char* name = p["name"] | p["param"] | "";
@@ -161,7 +162,7 @@ WeekTile::WeekTile(lv_obj_t* parent)
             if (wsymb > 0) {
                 if (wsymb == 1) icon = &Clear;
                 else if (wsymb <= 4) icon = &MostlyClear;      // 2-4 mostly clear/variable
-                else if (wsymb <= 6) icon = &Cloudy;           // 5-6 cloudy/overcast
+                else if (wsymb <= 6) icon = &Overcast;           // 5-6 cloudy/overcast
                 else if (wsymb == 7) icon = &Fog;              // fog
                 else if (wsymb >= 8 && wsymb <= 11) icon = &LightRain;  // showers
                 else if (wsymb >= 12 && wsymb <= 16) icon = &HeavyRain; // heavier rain/thunder
@@ -170,7 +171,7 @@ WeekTile::WeekTile(lv_obj_t* parent)
             }
 
             if (icon) lv_img_set_src(self->icon_weather[found], icon);
-
+            
             // mark date seen
             strncpy(seenDates[found], dateKey, sizeof(seenDates[found]) - 1);
             seenDates[found][10] = '\0';
