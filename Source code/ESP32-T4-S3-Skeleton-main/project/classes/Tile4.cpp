@@ -7,7 +7,7 @@
 #include "../../src/Snow.h"
 #include "../../src/Thunderstorm.h"
 #include "../../src/MostlyClear.h"
-// TODO: #include "../../src/Overcast.h"
+#include "../../src/MostlyCloudy.h"
 #include "../../src/Fog.h"
 #include "../../src/SMHIClient.hpp"
 #include <ArduinoJson.h>
@@ -162,7 +162,7 @@ WeekTile::WeekTile(lv_obj_t* parent)
             if (wsymb > 0) {
                 if (wsymb == 1) icon = &Clear;
                 else if (wsymb <= 4) icon = &MostlyClear;      // 2-4 mostly clear/variable
-                else if (wsymb <= 6) icon = &Overcast;           // 5-6 cloudy/overcast
+                else if (wsymb <= 6) icon = &Cloudy;           // 5-6 cloudy/overcast
                 else if (wsymb == 7) icon = &Fog;              // fog
                 else if (wsymb >= 8 && wsymb <= 11) icon = &LightRain;  // showers
                 else if (wsymb >= 12 && wsymb <= 16) icon = &HeavyRain; // heavier rain/thunder
