@@ -7,6 +7,7 @@
 #include "../../src/Snow.h"
 #include "../../src/Thunderstorm.h"
 #include "../../src/MostlyClear.h"
+#include "../../src/MostlyCloudy.h"
 #include "../../src/Fog.h"
 #include "../../src/SMHIClient.hpp"
 #include <ArduinoJson.h>
