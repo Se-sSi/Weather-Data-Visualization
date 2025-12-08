@@ -1,12 +1,14 @@
 #pragma once
 #include <Arduino.h>
+#include <ArduinoJson.h>
 
 class SMHIClient {
 public:
-  // call once to init (no-op here, but keep for future)
-  static void begin();
+    static void begin();
 
-  // returns raw JSON as String or empty on error
-  static String fetchForecast(const char* city);
-  static String fetchHistorical(const char* city, const char* type);
+    // Hämta prognos
+    static String fetchForecast(const char* city);
+
+    // FIX: Byt till JsonDocument& doc
+    static bool fetchHistoricalToDoc(const char* city, const char* type, JsonDocument& doc);
 };
