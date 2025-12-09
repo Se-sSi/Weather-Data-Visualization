@@ -12,6 +12,18 @@
 #include "../../src/SMHIClient.hpp"
 #include <ArduinoJson.h>
 
+static const void* get_weather_icon(int symbol) {
+    if (symbol == 1) return &Clear;
+    if (symbol >= 2 && symbol <= 4) return &MostlyClear;
+    if (symbol >= 5 && symbol <= 6) return &Cloudy;
+    if (symbol == 7) return &Fog;
+    if (symbol >= 8 && symbol <= 11) return &LightRain;
+    if (symbol >= 12 && symbol <= 16) return &HeavyRain;
+    if (symbol >= 17 && symbol <= 20) return &Snow;
+    if (symbol == 21) return &Thunderstorm;
+    return &Thunderstorm;
+}
+
 WeekTile::WeekTile(lv_obj_t* parent)
 {
     SMHIClient::begin();
@@ -156,19 +168,8 @@ WeekTile::WeekTile(lv_obj_t* parent)
             char tempbuf[16];
             snprintf(tempbuf, sizeof(tempbuf), "%d°C", (int)round(ta));
             lv_label_set_text(self->label_temp[found], tempbuf);
-
-            // map wsymb to icon (approx mapping)
-            const void* icon = nullptr;
-            if (wsymb > 0) {
-                if (wsymb == 1) icon = &Clear;
-                else if (wsymb <= 4) icon = &MostlyClear;      // 2-4 mostly clear/variable
-                else if (wsymb <= 6) icon = &Cloudy;           // 5-6 cloudy/overcast
-                else if (wsymb == 7) icon = &Fog;              // fog
-                else if (wsymb >= 8 && wsymb <= 11) icon = &LightRain;  // showers
-                else if (wsymb >= 12 && wsymb <= 16) icon = &HeavyRain; // heavier rain/thunder
-                else if (wsymb >= 17 && wsymb <= 20) icon = &Snow;      // snow-ish
-                else icon = &Cloudy;
-            }
+            
+            const void* icon = get_weather_icon(wsymb);
 
             if (icon) lv_img_set_src(self->icon_weather[found], icon);
 

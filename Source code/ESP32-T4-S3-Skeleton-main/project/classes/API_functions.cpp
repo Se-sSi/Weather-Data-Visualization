@@ -106,6 +106,7 @@ struct Forecast_sample
     float temperature;
     int humidity;
     float wind_speed;
+    int symbol_code;
 };
 
 // Parses raw historical data JSON string into an array of Historical_sample
@@ -145,6 +146,7 @@ std::vector<Forecast_sample> raw_forecast_data_to_array(std::string data_string)
         sample.temperature = d.value("air_temperature", 0.0f);
         sample.humidity = d.value("relative_humidity", 0.0f);
         sample.wind_speed = d.value("wind_speed", 0.0f);
+        sample.symbol_code = d.value("symbol_code", 0);
         data.push_back(sample);
     }
 
@@ -166,7 +168,7 @@ void print_forecast_data(std::vector<Forecast_sample> data)
 {
     for (auto &sample : data)
     {
-        std::cout << "Date: " << sample.date << " Temperature: " << sample.temperature << " Humidity: " << sample.humidity << " Wind speed: " << sample.wind_speed << "\n";
+        std::cout << "Date: " << sample.date << " Temperature: " << sample.temperature << " Humidity: " << sample.humidity << " Wind speed: " << sample.wind_speed << " Symbol: " << sample.symbol_code << "\n";
     }
 }
 
@@ -238,7 +240,7 @@ std::string get_city_historical_url(int city_id, int type_id)
 // Constructs the URL for forecast data based on latitude and longitude
 std::string get_city_forecast_url(float lat, float lon)
 {
-    return "https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/" + std::to_string(lon) + "/lat/" + std::to_string(lat) + "/data.json";
+    return "https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/" + std::to_string(lon) + "/lat/" + std::to_string(lat) + "/data.json?parameters=symbol_code" ;
 }
 
 // Retrieves historical data for a given city and data type
