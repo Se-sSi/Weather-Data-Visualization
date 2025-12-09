@@ -1,4 +1,5 @@
 #include "Tile5.hpp"
+#include "SMHIClient.hpp"
 #include <string>
 
 HistoricalTile::HistoricalTile(lv_obj_t *parent)
@@ -43,7 +44,7 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
     lv_chart_set_range(chart_, LV_CHART_AXIS_PRIMARY_Y, 180, 260); // Not well done
 
     // Example temp values (°C ×10)
-    int temp_data_Humidity[30] = {
+    int temperature_data[30] = {
         223, 221, 218, 216, 215,
         217, 220, 224, 228, 232,
         231, 229, 224, 220, 219,
@@ -52,8 +53,17 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
         224, 226, 229, 233, 236};
 
 
+    // Fetch temperature data
+    SMHIClient::begin();
+    std::vector<float> temperature_data_float = SMHIClient::fetchHistoricalTemperatures("Goteborg", "Temperature");
+
+    int i = 0;
+    for(float temp: temperature_data_float) {
+        temperature_data[i] = (int) temp*10;
+        if(++i >= sizeof(temperature_data)) break;
+    }
     // Own created function to update the chart
-    update_chart(chart_, series_, temp_data_Humidity, 30);
+    update_chart(chart_, series_, temperature_data, sizeof(temperature_data));
 
     // Setting the tile background color and tile text colors
     apply_bg_color(false);
