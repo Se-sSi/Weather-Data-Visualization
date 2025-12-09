@@ -1,5 +1,6 @@
 #include "Tile5.hpp"
 #include <string>
+#include "API_functions.hpp"
 
 HistoricalTile::HistoricalTile(lv_obj_t *parent)
 {
@@ -51,9 +52,26 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
         228, 223, 220, 219, 221,
         224, 226, 229, 233, 236};
 
+    auto data = get_city_historical_data("Karlskrona", "Temperature");
 
+
+    std::vector<int> converted;
+    converted.reserve(data.size());
+    for (const auto& sample : data)
+    {
+        // convert float → int ×10
+        int scaled = static_cast<int>(sample.value * 10);
+        converted.push_back(scaled);
+    }
+
+    int size = converted.size();          // or choose a fixed size
+    int* my_array = new int[size];        // C-style array (dynamic)
+
+    for (int i = 0; i < size; i++)
+        my_array[i] = converted[i];
+        
     // Own created function to update the chart
-    update_chart(chart_, series_, temp_data_Humidity, 30);
+    update_chart(chart_, series_, my_array, converted.size());
 
     // Setting the tile background color and tile text colors
     apply_bg_color(false);

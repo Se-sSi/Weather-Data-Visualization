@@ -74,7 +74,7 @@ void print_json(const nlohmann::json &j, int indent = 0)
     }
 }
 
-// FUNGERAR EJ
+// NOT WORKING
 //  // Converts epoch milliseconds to human-readable date-time string
 //  std::string epoch_ms_to_datetime(long long ms_since_epoch)
 //  {
