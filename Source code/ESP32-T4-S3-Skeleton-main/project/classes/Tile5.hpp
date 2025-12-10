@@ -1,9 +1,14 @@
 #include "BaseTile.hpp"
 
+
+// Historical Tile
 class HistoricalTile : public BaseTile
 {
 public:
+    // Constructer: Creates the Historical Tile
     HistoricalTile(lv_obj_t *parent);
+
+    // UI - elements
     lv_obj_t *title_;
     lv_obj_t *chart_;
     lv_chart_series_t *series_;

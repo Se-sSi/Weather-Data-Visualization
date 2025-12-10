@@ -1,10 +1,12 @@
 #include "Tile3.hpp"
 
-
+// Constructer: creates a OptionTile
 OptionTile::OptionTile(lv_obj_t *parent)
 {
+    // Creates a tile in the position 1,0
     tile_ = lv_tileview_add_tile(parent, 1, 0, LV_DIR_BOTTOM);
 
+    // Option Label
     title_ = lv_label_create(tile_);
     lv_label_set_text(title_, "Options");
     lv_obj_align(title_, LV_ALIGN_TOP_MID, 0, 60);
@@ -18,6 +20,7 @@ OptionTile::OptionTile(lv_obj_t *parent)
     lv_obj_set_style_border_width(btn, 3, LV_STATE_DEFAULT);
     lv_obj_set_style_border_color(btn, lv_color_make(0, 0, 0), LV_STATE_DEFAULT);
 
+    // Creates Reset label
     reset_text = lv_label_create(btn);
     lv_label_set_text(reset_text, "Reset");
     lv_obj_align(reset_text, LV_ALIGN_CENTER, 0, 0);
