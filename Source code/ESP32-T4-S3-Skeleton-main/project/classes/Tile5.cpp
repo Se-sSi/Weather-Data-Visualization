@@ -4,22 +4,22 @@
 
 HistoricalTile::HistoricalTile(lv_obj_t *parent)
 {
-    // --- Tile ---
+    // Creates a tile in the position 2,1
     tile_ = lv_tileview_add_tile(parent, 2, 1, LV_DIR_LEFT);
 
-    // --- Title ---
+    // Title
     title_ = lv_label_create(tile_);
     lv_label_set_text(title_, "Historical Data");
     lv_obj_set_style_text_font(title_, &lv_font_montserrat_30, 0);
     lv_obj_align(title_, LV_ALIGN_TOP_MID, 0, 50);
 
-    // --- Create ---
+    // Dropdown
     lv_obj_t *dd = lv_dropdown_create(tile_);
     fill_dropdown_with_params(dd);
     lv_obj_set_size(dd, 200, 40);
     lv_obj_align(dd, LV_ALIGN_TOP_RIGHT, -10, 10);
 
-    // --- Chart ---
+    // Chart
     chart_ = lv_chart_create(tile_);
     lv_obj_set_size(chart_, 560, 300);
     lv_obj_align(chart_, LV_ALIGN_BOTTOM_MID, 0, -30);
@@ -29,11 +29,11 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
     lv_chart_set_point_count(chart_, HISTORICAL_DATA_POINTS);
     lv_obj_set_style_line_rounded(chart_, true, LV_PART_ITEMS);
 
-    // --- Slider --- Created with AI help
+    // Slider (Created with AI help)
     slider_ = lv_slider_create(tile_);
     lv_slider_set_range(slider_, 0, HISTORICAL_DATA_POINTS - 1);
     lv_obj_set_width(slider_, 560);
-    lv_obj_align(slider_, LV_ALIGN_BOTTOM_MID, 0, 0);   // placerad under grafen
+    lv_obj_align(slider_, LV_ALIGN_BOTTOM_MID, 0, 0);
 
     cursor_line_ = lv_obj_create(chart_);
     lv_obj_set_size(cursor_line_, 2, lv_obj_get_height(chart_));
@@ -43,7 +43,7 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
     lv_obj_align(cursor_line_, LV_ALIGN_TOP_LEFT, 0, 0);
     lv_obj_move_foreground(cursor_line_);
 
-
+    // Value Label
     value_label_ = lv_label_create(tile_);
     lv_label_set_text(value_label_, "");
     lv_obj_align(value_label_, LV_ALIGN_TOP_MID, 0, 90);
@@ -53,13 +53,11 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
     self->on_slider_changed(e);
     }, LV_EVENT_VALUE_CHANGED, this);
 
-    // --- Series ---
+    // Series 
     // Used in creating the chart object
     series_ = lv_chart_add_series(chart_, lv_palette_main(LV_PALETTE_BLUE), LV_CHART_AXIS_PRIMARY_Y);
 
-    // Example temp values (°C ×10)
     int temperature_data[HISTORICAL_DATA_POINTS] = {0};
-
 
     // Fetch temperature data
     SMHIClient::begin();
@@ -78,10 +76,10 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
     
     lv_chart_set_range(chart_, LV_CHART_AXIS_PRIMARY_Y, ymin, ymax);
 
-    // Own created function to update the chart
-    update_chart(chart_, series_, temperature_data, HISTORICAL_DATA_POINTS); //sizeof(temperature_data));
+    // Updates the chart
+    update_chart(chart_, series_, temperature_data, HISTORICAL_DATA_POINTS);
 
-    // Setting the tile background color and tile text colors
+    // Applying colors
     apply_bg_color(false);
     apply_text_color(title_, false);
 }
@@ -91,16 +89,16 @@ void HistoricalTile::on_slider_changed(lv_event_t *e) // Created with AI help
     HistoricalTile *self = static_cast<HistoricalTile*>(lv_event_get_user_data(e));
     int idx = lv_slider_get_value(self->slider_);
 
-    // Skydda mot out-of-range
+    // Protect against out-of-range
     if (idx < 0 || idx >= lv_chart_get_point_count(self->chart_)) return;
 
-    // Hämta y-värde
+    // Get y-values
     int y = self->series_->y_points[idx];
 
-    // Uppdatera label
+    // Updates label
     lv_label_set_text_fmt(self->value_label_, "Temperature was %.1f°C %d days ago", y / 10.0f, HISTORICAL_DATA_POINTS-idx);
 
-    // Flytta cursor-linjen
+    // Move cursor-line
     int chart_w = lv_obj_get_width(self->chart_);
     int point_count = lv_chart_get_point_count(self->chart_);
     lv_obj_set_size(cursor_line_, 2, lv_obj_get_height(chart_));
@@ -136,8 +134,8 @@ void HistoricalTile::update_chart(lv_obj_t *chart, lv_chart_series_t *series, in
 // Creates the string needed for the dropdown
 void HistoricalTile::fill_dropdown_with_params(lv_obj_t *dd)
 {
-    const char *arr[4] = {"Temperature", "Humidity", "Wind Speed", "Air Pressure"}; //REDIGERA DETTA UTAN TEST, KAN VARA FEL HÄR (LA TILL DEN AIR PRESSURE DÅ DET OCKSÅ ÄR EN PARAMETER SOM BEHÖVS)
-    size_t count = 4; //REDIGERA DETTA UTAN TEST, KAN VARA FEL HÄR (FRÅN 3 -> 4)
+    const char *arr[4] = {"Temperature", "Humidity", "Wind Speed", "Air Pressure"};
+    size_t count = 4;
 
     std::string out;
     for (size_t i = 0; i < count; i++)

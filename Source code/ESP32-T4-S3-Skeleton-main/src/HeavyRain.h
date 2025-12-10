@@ -1,4 +1,4 @@
-// HeavyRain.h
+// This header-file is created by Chat-gpt. It was asked to create a header file for the corresponding .cpp-file.
 #ifndef HEAVYRAIN_H
 #define HEAVYRAIN_H
 

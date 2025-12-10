@@ -1,4 +1,7 @@
 #include "Tile4.hpp"
+#include <ArduinoJson.h>
+
+// Icon imports
 #include "../../src/Cogwheel.hpp"
 #include "../../src/Cloudy.h"
 #include "../../src/Clear.h"
@@ -10,8 +13,8 @@
 #include "../../src/MostlyCloudy.h"
 #include "../../src/Fog.h"
 #include "../../src/SMHIClient.hpp"
-#include <ArduinoJson.h>
 
+// Function that returns the corresponding icon
 static const void* get_weather_icon(int symbol) {
     if (symbol == 1) return &Clear;
     if (symbol >= 2 && symbol <= 4) return &MostlyClear;
@@ -32,20 +35,25 @@ static const void* get_weather_icon(int symbol) {
     return &MostlyClear;
 }
 
+// ---------------------------------------
+// This is the 7-day weather forecast tile
+// ---------------------------------------
+
+
 WeekTile::WeekTile(lv_obj_t* parent)
 {
     SMHIClient::begin();
 
-    // --- Tile ---
+    // Creates a tile in the position 0,1
     tile_ = lv_tileview_add_tile(parent, 0, 1, LV_DIR_RIGHT);
     
-    // --- Title ---
+    // Title
     title_ = lv_label_create(tile_);
     lv_label_set_text(title_, "7 Day Forecast");
     lv_obj_set_style_text_font(title_, &lv_font_montserrat_48, 0);
     lv_obj_align(title_, LV_ALIGN_TOP_MID, 0, 60);
 
-    // --- Week Container ---
+    // Week Container
     lv_obj_t* weekContainer = lv_obj_create(tile_);
     lv_obj_set_size(weekContainer, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
     lv_obj_set_style_bg_opa(weekContainer, LV_OPA_TRANSP, 0);
@@ -55,16 +63,16 @@ WeekTile::WeekTile(lv_obj_t* parent)
     lv_obj_set_flex_flow(weekContainer, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_flex_align(weekContainer, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
-    // --- Variables In Containers --- (will be filled from API)
+    // Variables In Containers (will be filled from API)
     const char* weekDays[7] = {"", "", "", "", "", "", ""};
     const char* temperatures[7] = {"", "", "", "", "", "", ""};
     const void* symbols[7] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
-    // --- One Day Container ---
+    // One Day Container
     for(int i = 0; i < 7; i++) 
     {
     dayContainer[i] = lv_obj_create(weekContainer);
-    lv_obj_set_size(dayContainer[i], 400, 200); // fast bredd eller procent
+    lv_obj_set_size(dayContainer[i], 400, 200);
     lv_obj_set_style_pad_all(dayContainer[i], 8, 0);
     lv_obj_set_style_bg_color(dayContainer[i], lv_color_make(220, 235, 255), 0);
     lv_obj_set_style_radius(dayContainer[i], 10, 0);
@@ -78,30 +86,30 @@ WeekTile::WeekTile(lv_obj_t* parent)
     lv_style_set_text_font(&style_day, &lv_font_montserrat_34);
     lv_style_set_text_font(&style_temp, &lv_font_montserrat_48);
 
-    // --- Day ---
+    // Day Label
     label_day[i] = lv_label_create(dayContainer[i]);
     lv_label_set_text(label_day[i], weekDays[i]); // initially empty
     lv_obj_add_style(label_day[i], &style_day, 0);
     lv_obj_align(label_day[i], LV_ALIGN_CENTER, 70, 20);
 
-    // --- Temp ---
+    // Temp Label
     label_temp[i] = lv_label_create(dayContainer[i]);
     lv_label_set_text(label_temp[i], temperatures[i]); // initially empty
     lv_obj_add_style(label_temp[i], &style_temp, 0);
     lv_obj_align(label_temp[i], LV_ALIGN_TOP_MID, 70, 50);
 
-    // --- Icon ---
+    // Icon Image
     icon_weather[i] = lv_img_create(dayContainer[i]);
-    lv_img_set_src(icon_weather[i], symbols[i]);            // initially null
-    lv_obj_align(icon_weather[i], LV_ALIGN_BOTTOM_MID, -90, -15);  // Placera längst ner
+    lv_img_set_src(icon_weather[i], symbols[i]); // initially null
+    lv_obj_align(icon_weather[i], LV_ALIGN_BOTTOM_MID, -90, -15);
     }
 
-    // Setting the tile background color and tile text colors
+    // Applying colors
     apply_bg_color(false);
     apply_text_color(title_, false);
 
 
-    // --- Timer: fetch forecast and update the UI (placed after UI creation) ---
+    // Timer: fetch forecast and update the UI (placed after UI creation)
     lv_timer_t* t = lv_timer_create([](lv_timer_t* timer){
         WeekTile* self = (WeekTile*)timer->user_data;
         String raw = SMHIClient::fetchForecast("Karlskrona");
@@ -116,7 +124,7 @@ WeekTile::WeekTile(lv_obj_t* parent)
         JsonArray ts = doc["timeSeries"].as<JsonArray>();
         if (ts.isNull()) return;
 
-        // collect up to 7 distinct dates at hour 12
+        // Collect up to 7 distinct dates at hour 12
         int found = 0;
         const int MAXD = 7;
         char seenDates[MAXD][11]; // "YYYY-MM-DD"
@@ -125,29 +133,29 @@ WeekTile::WeekTile(lv_obj_t* parent)
         for (JsonObject item : ts) {
             if (found >= MAXD) break;
 
-            // time field may be "validTime" or "time"
+            // Time field may be "validTime" or "time"
             const char* timestr = item["validTime"] | item["time"] | "";
             if (!timestr || strlen(timestr) < 13) continue;
 
             int y=0, m=0, d=0, h=0;
             if (sscanf(timestr, "%4d-%2d-%2dT%2d", &y, &m, &d, &h) < 4) continue;
 
-            if (h != 12) continue; // only noon
+            if (h != 12) continue; // Only noon
 
             char dateKey[11];
             snprintf(dateKey, sizeof(dateKey), "%04d-%02d-%02d", y, m, d);
 
-            // check if date already taken
+            // Check if date already taken
             bool already = false;
             for (int k=0;k<found;k++) if (strcmp(seenDates[k], dateKey) == 0) { already = true; break; }
             if (already) continue;
 
-            // extract temperature and symbol_code present
+            // Extract temperature and symbol_code present
             float ta = 0.0f;
             bool gotTemp = false;
             int wsymb = -1;
 
-            // --- Direktläsning av SMHI Snow1G-format --- Created with AI help
+            // Reads directly from SMHI Snow1G-format - Created with AI help
 
             if (item.containsKey("data")) {
                 JsonObject d = item["data"];
@@ -171,18 +179,18 @@ WeekTile::WeekTile(lv_obj_t* parent)
                         ta = (p["values"][0] | p["value"] | 0.0f);
                         gotTemp = true;
                     } else if (name && (strcmp(name, "Wsymb2")==0 || strcmp(name, "Wsymb")==0)) {
-                        // value may be number or string
+                        // Value may be number or string
                         wsymb = p["values"][0] | p["value"] | -1;
                     }
                 }
             }
 
             if (!gotTemp) {
-                // fallback: try top-level fields
+                // Fallback: try top-level fields
                 ta = item["t"] | item["air_temperature"] | 0.0f;
             }
 
-            // update UI (we are in LVGL timer, safe)
+            // Update UI (we are in LVGL timer, safe)
             lv_label_set_text(self->label_day[found], dateKey);
 
             char tempbuf[16];
@@ -193,13 +201,13 @@ WeekTile::WeekTile(lv_obj_t* parent)
 
             if (icon) lv_img_set_src(self->icon_weather[found], icon);
 
-            // mark date seen
+            // Mark date seen
             strncpy(seenDates[found], dateKey, sizeof(seenDates[found]) - 1);
             seenDates[found][10] = '\0';
             found++;
         }
 
-        // if you want repeated updates, don't delete timer
+        // If you want repeated updates, don't delete timer
         lv_timer_del(timer);
     }, 1000, this);
 }

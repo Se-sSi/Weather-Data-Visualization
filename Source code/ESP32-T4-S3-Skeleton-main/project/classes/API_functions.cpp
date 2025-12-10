@@ -74,24 +74,6 @@ void print_json(const nlohmann::json &j, int indent = 0)
     }
 }
 
-// FUNGERAR EJ
-//  // Converts epoch milliseconds to human-readable date-time string
-//  std::string epoch_ms_to_datetime(long long ms_since_epoch)
-//  {
-//      std::time_t t = static_cast<std::time_t>(ms_since_epoch / 1000);
-
-//     std::tm tm{};
-// #ifdef _WIN32
-//     localtime_s(&tm, &t); // or gmtime_s for UTC
-// #else
-//     localtime_r(&t, &tm); // or gmtime_r for UTC
-// #endif
-
-//     std::ostringstream oss;
-//     oss << std::put_time(&tm, "%Y-%m-%d %H:%M:%S"); // e.g. "2025-12-02 14:37:00"
-//     return oss.str();
-// }
-
 // Data structure for historical samples
 struct Historical_sample
 {
@@ -152,16 +134,6 @@ std::vector<Forecast_sample> raw_forecast_data_to_array(std::string data_string)
 
     return data;
 }
-
-// NOT USED/NOT WORKING
-//  // Prints historical data samples
-//  void print_historical_data(std::vector<Historical_sample> data)
-//  {
-//      for (auto &sample : data)
-//      {
-//          std::cout << "Date: " << epoch_ms_to_datetime(sample.time_ms) << " Value: " << sample.value << "\n";
-//      }
-//  }
 
 // Prints forecast data samples
 void print_forecast_data(std::vector<Forecast_sample> data)

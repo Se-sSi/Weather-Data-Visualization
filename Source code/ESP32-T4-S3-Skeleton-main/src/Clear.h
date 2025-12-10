@@ -1,4 +1,4 @@
-// Clear.h
+// This header-file is created by Chat-gpt. It was asked to create a header file for the corresponding .cpp-file.
 #ifndef CLEAR_H
 #define CLEAR_H
 

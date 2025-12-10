@@ -1,5 +1,9 @@
 #include "BaseTile.hpp"
 
+// ------------------------------------------------
+// This is the parent tile every tile inherits from
+// ------------------------------------------------
+
 // Set the background colour of the tile
 void BaseTile::apply_bg_color(bool dark)
 {
