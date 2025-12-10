@@ -1,9 +1,25 @@
+/* Functions and examples of how to use the SMHI API for fetching weather data
+    Required external libraries:
+        - libcurl - for HTTP requests
+        - nlohmann::json - for JSON parsing
+
+    References:
+        - SMHI API: https://opendata.smhi.se/metobs/api
+        - history url: https://opendata-download-metobs.smhi.se/api/version/1.0/parameter/{type_id}/station/{city_id}/period/latest-months/data.json
+        - forecast url: https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/{lon}/lat/{lat}/data.json
+*/
+
+
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
 #include <iostream>
 #include <string>
 #include <vector>
+#include <ctime>
+#include <sstream>
+#include <iomanip>
 
+// Callback function for libcurl to write received data into a string
 size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* s) {
     s->append((char*)contents, size * nmemb);
     return size * nmemb;
@@ -88,6 +104,7 @@ struct Forecast_sample {
     float temperature;
     int humidity;
     float wind_speed;
+    int symbol_code;
 };
 
 // Parses raw historical data JSON string into an array of Historical_sample
@@ -127,6 +144,7 @@ std::vector<Forecast_sample> raw_forecast_data_to_array(std::string data_string)
         sample.temperature = d.value("air_temperature", 0.0f);
         sample.humidity    = d.value("relative_humidity", 0.0f);
         sample.wind_speed  = d.value("wind_speed", 0.0f);
+        sample.symbol_code  = d.value("symbol_code", 0.0f);
         data.push_back(sample);
     }
     
@@ -148,7 +166,7 @@ void print_forecast_data(std::vector<Forecast_sample> data)
 {
     for (auto& sample : data)
     {
-        std::cout << "Date: " << sample.date << " Temperature: " << sample.temperature << " Humidity: " << sample.humidity << " Wind speed: " << sample.wind_speed << "\n";
+        std::cout << "Date: " << sample.date << " Temperature: " << sample.temperature << " Humidity: " << sample.humidity << " Wind speed: " << sample.wind_speed << " Symbol code: " << sample.symbol_code << "\n";
     }
 }
 
@@ -166,6 +184,7 @@ int get_city_id(std::string city_name)
     if (city_name == "Helsingborg")      return 62040;
     if (city_name == "Jonkoping")        return 74470;
     if (city_name == "Norrkoping")       return 86360;
+    return 65090; // default to Karlskrona
 }
 
 // Maps data type names to their corresponding type IDs
@@ -180,11 +199,45 @@ int get_type_id(std::string type_name)
     if (type_name == "Rain every hour")     return 7;   // rain every hour in mm
     if (type_name == "Pressure")            return 9;   // pressure every hour in hPa
     if (type_name == "Clarity")             return 12;  // clairity every hour in hPa
-    if (type_name == "Comming weather")     return 13;  // Uppcomming weather? once per hour, 8 times per day?
+    if (type_name == "Weather code")     return 13;  // Weather code once per hour, 8 times per day
     if (type_name == "Total cloudyness")    return 16;  // Total cloudyness, once per hour
     if (type_name == "Min temperature")     return 19;  // min temperature, once per day, 4 months
     if (type_name == "Max temperature")     return 20;  // max temperature, once per day, 4 months
-    // etc
+    return 1; // default to Temperature every hour
+}
+
+// Maps city names to their corresponding latitude
+float get_city_lat(std::string city_name)
+{
+    if (city_name == "Karlskrona")       return 56.1612;
+    if (city_name == "Stockholm")        return 59.3293;
+    if (city_name == "Goteborg")         return 57.7089; 
+    if (city_name == "Malmo")            return 55.6049;
+    if (city_name == "Uppsala")          return 59.8586;
+    if (city_name == "Vasteras")         return 59.6099;
+    if (city_name == "orebro")           return 59.2753;
+    if (city_name == "Linkoping")        return 58.4109;
+    if (city_name == "Helsingborg")      return 56.0465;
+    if (city_name == "Jonkoping")        return 57.7826;
+    if (city_name == "Norrkoping")       return 58.5877;
+    return 56.1612; // default to Karlskrona
+}
+
+// Maps city names to their corresponding longitude
+float get_city_lon(std::string city_name)
+{
+    if (city_name == "Karlskrona")       return 15.5869;
+    if (city_name == "Stockholm")        return 18.0686;
+    if (city_name == "Goteborg")         return 11.9746; 
+    if (city_name == "Malmo")            return 13.0038;
+    if (city_name == "Uppsala")          return 17.6389;
+    if (city_name == "Vasteras")         return 16.5448;
+    if (city_name == "orebro")           return 15.2133;
+    if (city_name == "Linkoping")        return 15.6167;
+    if (city_name == "Helsingborg")      return 12.6945;
+    if (city_name == "Jonkoping")        return 14.1618;
+    if (city_name == "Norrkoping")       return 16.1771;
+    return 15.5869; // default to Karlskrona
 }
 
 
@@ -207,39 +260,6 @@ std::vector<Historical_sample> get_city_historical_data(std::string city_name, s
     std::string url = get_city_historical_url(get_city_id(city_name), get_type_id(type_name));
     std::string raw_data = get_raw_data(url);
     return raw_historical_data_to_array(raw_data);
-}
-
-
-// Maps city names to their corresponding latitude
-float get_city_lat(std::string city_name)
-{
-    if (city_name == "Karlskrona")       return 56.1612;
-    if (city_name == "Stockholm")        return 59.3293;
-    if (city_name == "Goteborg")         return 57.7089; 
-    if (city_name == "Malmo")            return 55.6049;
-    if (city_name == "Uppsala")          return 59.8586;
-    if (city_name == "Vasteras")         return 59.6099;
-    if (city_name == "orebro")           return 59.2753;
-    if (city_name == "Linkoping")        return 58.4109;
-    if (city_name == "Helsingborg")      return 56.0465;
-    if (city_name == "Jonkoping")        return 57.7826;
-    if (city_name == "Norrkoping")       return 58.5877;
-}
-
-// Maps city names to their corresponding longitude
-float get_city_lon(std::string city_name)
-{
-    if (city_name == "Karlskrona")       return 15.5869;
-    if (city_name == "Stockholm")        return 18.0686;
-    if (city_name == "Goteborg")         return 11.9746; 
-    if (city_name == "Malmo")            return 13.0038;
-    if (city_name == "Uppsala")          return 17.6389;
-    if (city_name == "Vasteras")         return 16.5448;
-    if (city_name == "orebro")           return 15.2133;
-    if (city_name == "Linkoping")        return 15.6167;
-    if (city_name == "Helsingborg")      return 12.6945;
-    if (city_name == "Jonkoping")        return 14.1618;
-    if (city_name == "Norrkoping")       return 16.1771;
 }
 
 
