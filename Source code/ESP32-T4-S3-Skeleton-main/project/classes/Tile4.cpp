@@ -17,11 +17,19 @@ static const void* get_weather_icon(int symbol) {
     if (symbol >= 2 && symbol <= 4) return &MostlyClear;
     if (symbol >= 5 && symbol <= 6) return &Cloudy;
     if (symbol == 7) return &Fog;
-    if (symbol >= 8 && symbol <= 11) return &LightRain;
-    if (symbol >= 12 && symbol <= 16) return &HeavyRain;
-    if (symbol >= 17 && symbol <= 20) return &Snow;
+    if (symbol == 8) return &LightRain;
+    if (symbol >= 9 && symbol <= 10) return &HeavyRain;
+    if (symbol == 11) return &Thunderstorm;
+    if (symbol == 12) return &LightRain;
+    if (symbol >= 13 && symbol <= 14) return &HeavyRain;
+    if (symbol >= 15 && symbol <= 17) return &Snow;
+    if (symbol == 18) return &LightRain;
+    if (symbol >= 19 && symbol <= 20) return &HeavyRain;
     if (symbol == 21) return &Thunderstorm;
-    return &Thunderstorm;
+    if (symbol == 22) return &LightRain;
+    if (symbol >= 23 && symbol <= 24) return &HeavyRain;
+    if (symbol >= 25 && symbol <= 27) return &Snow;
+    return &MostlyClear;
 }
 
 WeekTile::WeekTile(lv_obj_t* parent)
