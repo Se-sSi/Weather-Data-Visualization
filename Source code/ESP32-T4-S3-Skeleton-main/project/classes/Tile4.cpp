@@ -80,8 +80,6 @@ WeekTile::WeekTile(lv_obj_t* parent)
     apply_bg_color(false);
     apply_text_color(title_, false);
 
-    // --- Events ---
-    lv_obj_add_event_cb(tile_, WeekTile::gesture_cb, LV_EVENT_GESTURE, this);
 
     // --- Timer: fetch forecast and update the UI (placed after UI creation) ---
     lv_timer_t* t = lv_timer_create([](lv_timer_t* timer){
@@ -181,17 +179,4 @@ WeekTile::WeekTile(lv_obj_t* parent)
         // if you want repeated updates, don't delete timer
         lv_timer_del(timer);
     }, 1000, this);
-}
-
-// Recognises the swipe motion
-void WeekTile::gesture_cb(lv_event_t* e)
-{
-    WeekTile* self = static_cast<WeekTile*>(lv_event_get_user_data(e));
-
-    lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_get_act());
-
-    if (dir == LV_DIR_TOP)
-    {
-        BaseTile::ShowGlobalOverlay("No Internet!", lv_color_hex(0xe74c3c));
-    }
 }

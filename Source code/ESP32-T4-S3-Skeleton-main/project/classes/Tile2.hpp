@@ -13,5 +13,4 @@ private:
     lv_obj_t* overlay_ = nullptr;
     
     static void tile_clicked_cb(lv_event_t* e);
-    static void tile_swipe_up(lv_event_t* e);
 };
