@@ -4,6 +4,8 @@
 
 HistoricalTile::HistoricalTile(lv_obj_t *parent)
 {
+    const int HISTORICAL_DATA_POINTS = 130;
+
     // --- Tile ---
     tile_ = lv_tileview_add_tile(parent, 2, 1, LV_DIR_LEFT);
 
@@ -26,44 +28,45 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
 
     lv_chart_set_type(chart_, LV_CHART_TYPE_LINE);
     lv_chart_set_update_mode(chart_, LV_CHART_UPDATE_MODE_SHIFT);
-    lv_chart_set_point_count(chart_, 30);
+    lv_chart_set_point_count(chart_, HISTORICAL_DATA_POINTS);
     lv_obj_set_style_line_rounded(chart_, true, LV_PART_ITEMS);
 
-    // Y-labels // Not well done
-    for (int i = 0; i <= 8; i++)
-    {
-        lv_obj_t *lbl = lv_label_create(chart_);
-        int val = 180 + i * 10; // Y-axis value
-        lv_label_set_text_fmt(lbl, "%d", val);
-        lv_obj_align(lbl, LV_ALIGN_LEFT_MID, 0, -60 + i * 15); // adjust positioning
-    }
+    // // Y-labels // Not well done
+    // for (int i = 0; i <= 8; i++)
+    // {
+    //     lv_obj_t *lbl = lv_label_create(chart_);
+    //     int val = 180 + i * 10; // Y-axis value
+    //     lv_label_set_text_fmt(lbl, "%d", val);
+    //     lv_obj_align(lbl, LV_ALIGN_LEFT_MID, 0, -60 + i * 15); // adjust positioning
+    // }
 
     // --- Series ---
     // Used in creating the chart object
     series_ = lv_chart_add_series(chart_, lv_palette_main(LV_PALETTE_BLUE), LV_CHART_AXIS_PRIMARY_Y);
-    lv_chart_set_range(chart_, LV_CHART_AXIS_PRIMARY_Y, 180, 260); // Not well done
 
     // Example temp values (°C ×10)
-    int temperature_data[30] = {
-        223, 221, 218, 216, 215,
-        217, 220, 224, 228, 232,
-        231, 229, 224, 220, 219,
-        222, 225, 229, 234, 230,
-        228, 223, 220, 219, 221,
-        224, 226, 229, 233, 236};
+    int temperature_data[HISTORICAL_DATA_POINTS] = {0};
 
 
     // Fetch temperature data
     SMHIClient::begin();
-    std::vector<float> temperature_data_float = SMHIClient::fetchHistoricalTemperatures("Goteborg", "Temperature");
+    std::vector<float> temperature_data_float = SMHIClient::fetchHistoricalTemperatures("Karlskrona", "Temperature");
 
     int i = 0;
+    int ymin = 1000;
+    int ymax = -1000;
     for(float temp: temperature_data_float) {
         temperature_data[i] = (int) temp*10;
+        if(temperature_data[i]>ymax) ymax = temperature_data[i];
+        if(temperature_data[i]<ymin) ymin = temperature_data[i];
+        
         if(++i >= sizeof(temperature_data)) break;
     }
+    
+    lv_chart_set_range(chart_, LV_CHART_AXIS_PRIMARY_Y, ymin, ymax);
+
     // Own created function to update the chart
-    update_chart(chart_, series_, temperature_data, sizeof(temperature_data));
+    update_chart(chart_, series_, temperature_data, HISTORICAL_DATA_POINTS); //sizeof(temperature_data));
 
     // Setting the tile background color and tile text colors
     apply_bg_color(false);
