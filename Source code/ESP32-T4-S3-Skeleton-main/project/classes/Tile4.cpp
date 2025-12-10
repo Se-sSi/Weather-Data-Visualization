@@ -149,20 +149,20 @@ WeekTile::WeekTile(lv_obj_t* parent)
             bool gotTemp = false;
             int wsymb = -1;
 
-            // --- Direktläsning av SMHI Snow1G-format ---
+            // --- Direktläsning av SMHI Snow1G-format --- Created with AI help
 
-if (item.containsKey("data")) {
-    JsonObject d = item["data"];
+            if (item.containsKey("data")) {
+                JsonObject d = item["data"];
 
-    if (d.containsKey("symbol_code")) {
-        if (d["symbol_code"].is<float>() || d["symbol_code"].is<double>() || d["symbol_code"].is<int>()) {
-            wsymb = (int) d["symbol_code"].as<float>();
-        } else {
-            const char* sc = d["symbol_code"].as<const char*>();
-            wsymb = atoi(sc);
-        }
-    }
-}
+                if (d.containsKey("symbol_code")) {
+                    if (d["symbol_code"].is<float>() || d["symbol_code"].is<double>() || d["symbol_code"].is<int>()) {
+                        wsymb = (int) d["symbol_code"].as<float>();
+                    } else {
+                        const char* sc = d["symbol_code"].as<const char*>();
+                        wsymb = atoi(sc);
+                    }
+                }
+            }
             if (item.containsKey("data") && item["data"].is<JsonObject>()) {
                 ta = item["data"]["air_temperature"] | item["data"]["t"] | 0.0f;
                 gotTemp = true;

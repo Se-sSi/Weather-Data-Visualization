@@ -29,7 +29,7 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
     lv_chart_set_point_count(chart_, HISTORICAL_DATA_POINTS);
     lv_obj_set_style_line_rounded(chart_, true, LV_PART_ITEMS);
 
-    // --- Slider ---
+    // --- Slider --- Created with AI help
     slider_ = lv_slider_create(tile_);
     lv_slider_set_range(slider_, 0, HISTORICAL_DATA_POINTS - 1);
     lv_obj_set_width(slider_, 560);
@@ -86,7 +86,7 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
     apply_text_color(title_, false);
 }
 
-void HistoricalTile::on_slider_changed(lv_event_t *e)
+void HistoricalTile::on_slider_changed(lv_event_t *e) // Created with AI help
 {
     HistoricalTile *self = static_cast<HistoricalTile*>(lv_event_get_user_data(e));
     int idx = lv_slider_get_value(self->slider_);

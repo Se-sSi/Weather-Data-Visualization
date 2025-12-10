@@ -17,6 +17,7 @@ static String http_get(const String& url) {
   return body;
 }
 
+// Created with AI help
 String SMHIClient::fetchForecast(const char* city) {
   // map city to lat/lon (copy of mapping in API example)
   float lat = 56.1612, lon = 15.5869; // default Karlskrona; extend mapping if needed
@@ -27,7 +28,8 @@ String SMHIClient::fetchForecast(const char* city) {
   return http_get(url);
 }
 
-String SMHIClient::fetchHistorical(const char* city, const char* type) {
+// Created with AI help
+String SMHIClient::fetchHistorical(const char* city, const char* type) { 
   // map city -> station id and type -> id (copy mappings from API example)
   int station = 65090; // default Karlskrona
   if (strcmp(city, "Goteborg") == 0) station = 71420;
