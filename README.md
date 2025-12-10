@@ -128,7 +128,7 @@ Has a timer set to when to update and fetch new API data
 
 ## Contact
 
-**Author:** Group 18 (Mattias HL, George B, Gustav, Amin, Simon S)
+**Author:** Group 18 (Mattias HL, George B, Gustav S, Amin K, Simon S)
 
 **Email:** Mahc24@student.bth.se, gebo24@studen.bth.se 
 
