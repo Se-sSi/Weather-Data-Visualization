@@ -12,6 +12,26 @@
 #include "../../src/SMHIClient.hpp"
 #include <ArduinoJson.h>
 
+static const void* get_weather_icon(int symbol) {
+    if (symbol == 1) return &Clear;
+    if (symbol >= 2 && symbol <= 4) return &MostlyClear;
+    if (symbol >= 5 && symbol <= 6) return &Cloudy;
+    if (symbol == 7) return &Fog;
+    if (symbol == 8) return &LightRain;
+    if (symbol >= 9 && symbol <= 10) return &HeavyRain;
+    if (symbol == 11) return &Thunderstorm;
+    if (symbol == 12) return &LightRain;
+    if (symbol >= 13 && symbol <= 14) return &HeavyRain;
+    if (symbol >= 15 && symbol <= 17) return &Snow;
+    if (symbol == 18) return &LightRain;
+    if (symbol >= 19 && symbol <= 20) return &HeavyRain;
+    if (symbol == 21) return &Thunderstorm;
+    if (symbol == 22) return &LightRain;
+    if (symbol >= 23 && symbol <= 24) return &HeavyRain;
+    if (symbol >= 25 && symbol <= 27) return &Snow;
+    return &MostlyClear;
+}
+
 WeekTile::WeekTile(lv_obj_t* parent)
 {
     SMHIClient::begin();
@@ -122,11 +142,25 @@ WeekTile::WeekTile(lv_obj_t* parent)
             for (int k=0;k<found;k++) if (strcmp(seenDates[k], dateKey) == 0) { already = true; break; }
             if (already) continue;
 
-            // extract temperature and Wsymb2 if present
+            // extract temperature and symbol_code present
             float ta = 0.0f;
             bool gotTemp = false;
             int wsymb = -1;
 
+            // --- Direktläsning av SMHI Snow1G-format --- Created with AI help
+
+            if (item.containsKey("data")) {
+                JsonObject d = item["data"];
+
+                if (d.containsKey("symbol_code")) {
+                    if (d["symbol_code"].is<float>() || d["symbol_code"].is<double>() || d["symbol_code"].is<int>()) {
+                        wsymb = (int) d["symbol_code"].as<float>();
+                    } else {
+                        const char* sc = d["symbol_code"].as<const char*>();
+                        wsymb = atoi(sc);
+                    }
+                }
+            }
             if (item.containsKey("data") && item["data"].is<JsonObject>()) {
                 ta = item["data"]["air_temperature"] | item["data"]["t"] | 0.0f;
                 gotTemp = true;
@@ -154,19 +188,8 @@ WeekTile::WeekTile(lv_obj_t* parent)
             char tempbuf[16];
             snprintf(tempbuf, sizeof(tempbuf), "%d°C", (int)round(ta));
             lv_label_set_text(self->label_temp[found], tempbuf);
-
-            // map wsymb to icon (approx mapping)
-            const void* icon = nullptr;
-            if (wsymb > 0) {
-                if (wsymb == 1) icon = &Clear;
-                else if (wsymb <= 4) icon = &MostlyClear;      // 2-4 mostly clear/variable
-                else if (wsymb <= 6) icon = &Cloudy;           // 5-6 cloudy/overcast
-                else if (wsymb == 7) icon = &Fog;              // fog
-                else if (wsymb >= 8 && wsymb <= 11) icon = &LightRain;  // showers
-                else if (wsymb >= 12 && wsymb <= 16) icon = &HeavyRain; // heavier rain/thunder
-                else if (wsymb >= 17 && wsymb <= 20) icon = &Snow;      // snow-ish
-                else icon = &Cloudy;
-            }
+            
+            const void* icon = get_weather_icon(wsymb);
 
             if (icon) lv_img_set_src(self->icon_weather[found], icon);
 

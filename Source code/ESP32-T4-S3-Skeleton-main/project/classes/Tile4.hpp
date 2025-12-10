@@ -16,11 +16,14 @@ public:
     // UI - elements
     lv_obj_t* title_;
     void update_day(int index, const char* day, const char* temp, const lv_img_dsc_t* icon);
+    static void gesture_cb(lv_event_t* e);
 
 private:
-    // Array with UI elements
     lv_obj_t* dayContainer[7];
     lv_obj_t* label_day[7];
     lv_obj_t* label_temp[7];
     lv_obj_t* icon_weather[7];
+
+private:
+
 };

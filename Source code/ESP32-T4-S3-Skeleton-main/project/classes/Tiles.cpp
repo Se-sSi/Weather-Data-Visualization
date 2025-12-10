@@ -21,7 +21,7 @@ void Tiles::create_ui()
     lv_obj_add_event_cb(weekTile_->get_obj(), Tiles::on_tile_clicked, LV_EVENT_CLICKED, this);
     lv_obj_add_event_cb(historicalTile_->get_obj(), Tiles::on_tile_clicked, LV_EVENT_CLICKED, this);
 
-    // Sett starting Tile
+    // Set starting Tile
     lv_obj_set_tile(tileview_, weatherTile_->get_obj(), LV_ANIM_OFF);
 }
 
@@ -37,7 +37,7 @@ void Tiles::on_tile_clicked(lv_event_t *e)
     self->weekTile_->apply_bg_color(self->dark);
     self->historicalTile_->apply_bg_color(self->dark);
 
-    // Applay text colours
+    // Apply text colours
     self->weatherTile_->apply_text_color(self->weatherTile_->title_, self->dark);
     self->weatherTile_->apply_text_color(self->weatherTile_->version_, self->dark);
     self->weatherTile_->apply_text_color(self->weatherTile_->group_, self->dark);
@@ -61,5 +61,3 @@ void Tiles::on_tile_clicked(lv_event_t *e)
 
 //     // ... fortsätt med fler navigationer som du vill
 // }
-
-/*
