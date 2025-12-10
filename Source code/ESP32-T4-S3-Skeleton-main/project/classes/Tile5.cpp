@@ -43,10 +43,12 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
     lv_obj_set_style_bg_opa(cursor_line_, LV_OPA_COVER, 0);
     lv_obj_add_flag(cursor_line_, LV_OBJ_FLAG_IGNORE_LAYOUT); 
     lv_obj_align(cursor_line_, LV_ALIGN_TOP_LEFT, 0, 0);
+    lv_obj_move_foreground(cursor_line_);
+
 
     value_label_ = lv_label_create(tile_);
     lv_label_set_text(value_label_, "");
-    lv_obj_align(value_label_, LV_ALIGN_BOTTOM_MID, 0, 10);
+    lv_obj_align(value_label_, LV_ALIGN_TOP_MID, 0, 90);
 
     lv_obj_add_event_cb(slider_, [](lv_event_t *e){
     HistoricalTile *self = static_cast<HistoricalTile*>(lv_event_get_user_data(e));
@@ -103,6 +105,7 @@ void HistoricalTile::on_slider_changed(lv_event_t *e)
     // Flytta cursor-linjen
     int chart_w = lv_obj_get_width(self->chart_);
     int point_count = lv_chart_get_point_count(self->chart_);
+    lv_obj_set_size(cursor_line_, 2, lv_obj_get_height(chart_));
 
     int x = (idx * chart_w) / point_count;
     lv_obj_set_x(self->cursor_line_, x);
