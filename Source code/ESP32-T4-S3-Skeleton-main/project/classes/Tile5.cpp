@@ -4,8 +4,6 @@
 
 HistoricalTile::HistoricalTile(lv_obj_t *parent)
 {
-    const int HISTORICAL_DATA_POINTS = 130;
-
     // --- Tile ---
     tile_ = lv_tileview_add_tile(parent, 2, 1, LV_DIR_LEFT);
 
@@ -100,7 +98,7 @@ void HistoricalTile::on_slider_changed(lv_event_t *e)
     int y = self->series_->y_points[idx];
 
     // Uppdatera label
-    lv_label_set_text_fmt(self->value_label_, "Value: %.1f°C", y / 10.0f);
+    lv_label_set_text_fmt(self->value_label_, "Temperature was %.1f°C %d days ago", y / 10.0f, HISTORICAL_DATA_POINTS-idx);
 
     // Flytta cursor-linjen
     int chart_w = lv_obj_get_width(self->chart_);
