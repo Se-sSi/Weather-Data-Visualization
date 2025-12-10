@@ -5,6 +5,10 @@
 HistoricalTile::HistoricalTile(lv_obj_t *parent)
 {
     const int HISTORICAL_DATA_POINTS = 130;
+    lv_obj_t *slider_;
+    lv_obj_t *cursor_line_;
+    lv_obj_t *value_label_;
+
 
     // --- Tile ---
     tile_ = lv_tileview_add_tile(parent, 2, 1, LV_DIR_LEFT);
@@ -12,8 +16,8 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
     // --- Title ---
     title_ = lv_label_create(tile_);
     lv_label_set_text(title_, "Historical Data");
-    lv_obj_set_style_text_font(title_, &lv_font_montserrat_48, 0);
-    lv_obj_align(title_, LV_ALIGN_TOP_MID, 0, 60);
+    lv_obj_set_style_text_font(title_, &lv_font_montserrat_30, 0);
+    lv_obj_align(title_, LV_ALIGN_TOP_MID, 0, 50);
 
     // --- Create ---
     lv_obj_t *dd = lv_dropdown_create(tile_);
@@ -23,22 +27,19 @@ HistoricalTile::HistoricalTile(lv_obj_t *parent)
 
     // --- Chart ---
     chart_ = lv_chart_create(tile_);
-    lv_obj_set_size(chart_, 560, 320);
-    lv_obj_align(chart_, LV_ALIGN_BOTTOM_MID, 0, -10);
+    lv_obj_set_size(chart_, 560, 300);
+    lv_obj_align(chart_, LV_ALIGN_BOTTOM_MID, 0, -30);
 
     lv_chart_set_type(chart_, LV_CHART_TYPE_LINE);
     lv_chart_set_update_mode(chart_, LV_CHART_UPDATE_MODE_SHIFT);
     lv_chart_set_point_count(chart_, HISTORICAL_DATA_POINTS);
     lv_obj_set_style_line_rounded(chart_, true, LV_PART_ITEMS);
 
-    // // Y-labels // Not well done
-    // for (int i = 0; i <= 8; i++)
-    // {
-    //     lv_obj_t *lbl = lv_label_create(chart_);
-    //     int val = 180 + i * 10; // Y-axis value
-    //     lv_label_set_text_fmt(lbl, "%d", val);
-    //     lv_obj_align(lbl, LV_ALIGN_LEFT_MID, 0, -60 + i * 15); // adjust positioning
-    // }
+    // --- Slider ---
+    slider_ = lv_slider_create(tile_);
+    lv_slider_set_range(slider_, 0, HISTORICAL_DATA_POINTS - 1);
+    lv_obj_set_width(slider_, 560);
+    lv_obj_align(slider_, LV_ALIGN_BOTTOM_MID, 0, 0);   // placerad under grafen
 
     // --- Series ---
     // Used in creating the chart object
